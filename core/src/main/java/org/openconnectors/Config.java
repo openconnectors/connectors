@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.streamlio.config;
+package org.openconnectors.config;
 
 import java.util.Set;
 

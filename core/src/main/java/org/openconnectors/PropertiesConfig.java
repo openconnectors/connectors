@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.streamlio.config;
+package org.openconnectors.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
