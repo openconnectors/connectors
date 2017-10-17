@@ -19,14 +19,14 @@
 
 package org.openconnectors.connect;
 
-import org.openconnectors.config.Connector;
 import org.openconnectors.util.SinkConnectorContext;
 
 import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class SinkConnector<T extends SinkConnectorContext, U> extends Connector<T> {
 
-    public abstract void publish(final Collection<U> messages) throws Exception;
+    public abstract CompletableFuture<Collection<U>> publish(final Collection<U> messages) throws Exception;
 
     public abstract void flush() throws Exception;
 

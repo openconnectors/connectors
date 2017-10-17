@@ -25,7 +25,7 @@ import java.io.Closeable;
 import java.io.Serializable;
 import java.util.Collection;
 
-public interface SourceContext<T> extends Closeable, Serializable {
+public interface SourceCollector<T> extends Closeable, Serializable {
 
     void setup(Config config) throws Exception;
     void collect(Collection<T> messages) throws Exception;

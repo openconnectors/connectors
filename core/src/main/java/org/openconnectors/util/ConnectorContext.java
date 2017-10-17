@@ -20,4 +20,5 @@
 package org.openconnectors.util;
 
 public interface ConnectorContext {
+    
 }
