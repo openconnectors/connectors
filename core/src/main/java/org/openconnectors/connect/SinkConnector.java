@@ -17,8 +17,9 @@
  * under the License.
  */
 
-package org.openconnectors.config;
+package org.openconnectors.connect;
 
+import org.openconnectors.config.Connector;
 import org.openconnectors.util.SinkConnectorContext;
 
 import java.util.Collection;
