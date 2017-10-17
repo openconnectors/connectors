@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.openconnectors.config;
+package org.openconnectors.connect;
 
 import org.openconnectors.config.Config;
 
