@@ -26,7 +26,7 @@ import java.util.concurrent.CompletableFuture;
 
 public abstract class SinkConnector<T extends SinkConnectorContext, U> extends Connector<T> {
 
-    public abstract CompletableFuture<Collection<U>> publish(final Collection<U> messages) throws Exception;
+    public abstract CompletableFuture<Void> publish(final Collection<U> messages);
 
     public abstract void flush() throws Exception;
 
