@@ -1,0 +1,3 @@
+dependencies {
+    compile 'org.apache.kafka:kafka-clients:0.10.0.0'
+}

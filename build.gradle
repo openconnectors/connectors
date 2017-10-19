@@ -103,3 +103,24 @@ subprojects {
 project(':core') {
 
 }
+
+//Heron Adapter
+project(':heron-adapter') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+//Pulsar
+project(':pulsar') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+//Kafka
+project(':kafka') {
+	dependencies {
+		compile project(':core')
+	}
+}
