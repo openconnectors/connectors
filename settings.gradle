@@ -1,1 +1,1 @@
-include ":core"
+include ":core", ":heron-adapter", ":pulsar", ":kafka"
