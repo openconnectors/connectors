@@ -1,0 +1,4 @@
+dependencies {
+    compile 'com.zaxxer:HikariCP:2.7.2'
+    testCompile 'org.hsqldb:hsqldb:2.3.1'
+}

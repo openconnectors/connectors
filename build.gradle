@@ -124,3 +124,10 @@ project(':kafka') {
 		compile project(':core')
 	}
 }
+
+//JDBC
+project(':jdbc') {
+	dependencies {
+		compile project(':core')
+	}
+}
