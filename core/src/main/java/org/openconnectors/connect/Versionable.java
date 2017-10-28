@@ -19,31 +19,7 @@
 
 package org.openconnectors.connect;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+public interface Versionable {
 
-/**
- * Sink abstract connector meant to be at the end of DAG pipeline
- * i.e write data to persistent store
- *
- * @param <T>
- * @param <U>
- */
-public abstract class SinkConnector<U> extends Connector {
-
-    /**
-     * Attempt to publish a type safe collection of messages
-     *
-     * @param messages
-     * @return
-     */
-    public abstract CompletableFuture<Void> publish(final Collection<U> messages);
-
-    /**
-     * Explicit flush useful in being called before closing the sink
-     *
-     * @throws Exception
-     */
-    public abstract void flush() throws Exception;
-
+    String getVersion();
 }

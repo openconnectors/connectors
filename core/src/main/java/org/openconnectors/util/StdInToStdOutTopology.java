@@ -17,33 +17,23 @@
  * under the License.
  */
 
-package org.openconnectors.connect;
+package org.openconnectors.util;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import org.openconnectors.config.ConfigProvider;
+import org.openconnectors.stream.StdInputStreamSource;
 
 /**
- * Sink abstract connector meant to be at the end of DAG pipeline
- * i.e write data to persistent store
- *
- * @param <T>
- * @param <U>
+ * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public abstract class SinkConnector<U> extends Connector {
+public class StdInToStdOutTopology extends BasicCopyTopology<String>{
 
-    /**
-     * Attempt to publish a type safe collection of messages
-     *
-     * @param messages
-     * @return
-     */
-    public abstract CompletableFuture<Void> publish(final Collection<U> messages);
+    public StdInToStdOutTopology() {
+        super(new StdInputStreamSource(), new PrintStreamSinkCollector());
+    }
 
-    /**
-     * Explicit flush useful in being called before closing the sink
-     *
-     * @throws Exception
-     */
-    public abstract void flush() throws Exception;
-
+    public static void main(String[] args) throws Exception {
+        StdInToStdOutTopology instance = new StdInToStdOutTopology();
+        instance.setup(new ConfigProvider());
+        instance.run();
+    }
 }

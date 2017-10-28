@@ -20,28 +20,55 @@
 package org.openconnectors.connect;
 
 import org.openconnectors.config.Config;
-import org.openconnectors.util.ConnectorContext;
-import org.openconnectors.util.Versionable;
 
-import java.io.Closeable;
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class Connector<T extends ConnectorContext> implements Versionable, Closeable, Serializable {
+/**
+ * Connector component base abstract class
+ * The lifcycle of a connector is to initialize with a connector context
+ * open it for processing and then close it at the end of the session
+ *
+ * @param <T>
+ */
+public abstract class Connector implements Versionable, AutoCloseable, Serializable {
 
-    private T context;
+    private ConnectorContext context;
+    private AtomicBoolean isOpen;
 
-    public void initialize(T ctx){
+    /**
+     * First method to call in the lifecycle of the object
+     *
+     * @param ctx
+     */
+    public void initialize(final ConnectorContext ctx){
         this.context = ctx;
     }
 
-    public abstract void open(Config config) throws Exception;
+    /**
+     * Open connector with configuration
+     *
+     * @param config
+     * @throws Exception
+     */
+    public abstract void open(final Config config) throws Exception;
 
-    public void reset(Config config) throws Exception{
+    /**
+     * Reset the connector with a new configuration
+     *
+     * @param config
+     * @throws Exception
+     */
+    public void reset(final Config config) throws Exception{
         close();
         open(config);
     }
 
-    public T getContext() {
+    public ConnectorContext getContext() {
         return context;
     }
+    public AtomicBoolean isOpen() {
+        return isOpen;
+    }
+
 }

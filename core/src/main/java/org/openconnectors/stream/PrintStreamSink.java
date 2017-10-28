@@ -21,15 +21,19 @@ package org.openconnectors.stream;
 
 import org.openconnectors.config.Config;
 import org.openconnectors.connect.SinkConnector;
-import org.openconnectors.util.SinkConnectorContext;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class PrintStreamSink extends SinkConnector<SinkConnectorContext, String> {
+/**
+ * Sample Sink to print to std out
+ *
+ * lifcycle is init -> open -> close
+ *
+ */
+public class PrintStreamSink extends SinkConnector<String> {
 
     private String outputFormat;
     private AtomicLong linesReceived;
@@ -62,7 +66,8 @@ public class PrintStreamSink extends SinkConnector<SinkConnectorContext, String>
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
+        this.flush();
         stream.close();
     }
 

@@ -19,6 +19,30 @@
 
 package org.openconnectors.util;
 
-public interface SinkConnectorContext extends ConnectorContext {
+import org.openconnectors.config.Config;
+import org.openconnectors.connect.SourceConnector;
+
+/**
+ * Copy Topology template targeting unit testing
+ */
+public class BasicCopyTopology<T> {
+
+    private SourceConnector<T> source;
+    private SinkCollector<T> sinkCollector;
+
+    public BasicCopyTopology(SourceConnector<T> source, SinkCollector<T> sink) {
+        this.source = source;
+        this.sinkCollector = sink;
+    }
+
+    public void setup(Config config) throws Exception {
+        this.source.open(config);
+        this.sinkCollector.getSink().open(config);
+        this.source.setCollector(this.sinkCollector);
+    }
+
+    public void run() throws Exception {
+        this.source.run();
+    }
 
 }
