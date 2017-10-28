@@ -21,6 +21,9 @@ package org.openconnectors.config;
 
 import java.util.Set;
 
+/**
+ * Base Config Interface
+ */
 public interface Config {
 
     String getString(final String propertyName);

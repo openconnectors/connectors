@@ -19,6 +19,24 @@
 
 package org.openconnectors.util;
 
-public interface ConnectorContext {
-    
+import org.openconnectors.connect.Collector;
+import org.openconnectors.connect.SinkConnector;
+
+/**
+ * A sink being wrapped in the source collector interface
+ *
+ * @param <U>
+ */
+public abstract class SinkCollector<U> implements Collector<U> {
+
+    private SinkConnector<U> sink;
+
+    public SinkCollector(SinkConnector<U> sink){
+        this.sink = sink;
+    }
+
+    public SinkConnector<U> getSink() {
+        return sink;
+    }
+
 }

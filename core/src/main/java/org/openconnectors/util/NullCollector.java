@@ -19,7 +19,31 @@
 
 package org.openconnectors.util;
 
-public interface Versionable {
+import org.openconnectors.config.Config;
+import org.openconnectors.connect.Collector;
 
-    String getVersion();
+import java.util.Collection;
+
+/**
+ *
+ * Empty Source collector meant for test fixtures
+ *
+ * @param <T>
+ */
+public class NullCollector<T> implements Collector<T> {
+
+    @Override
+    public void setup(Config config) throws Exception {
+
+    }
+
+    @Override
+    public void collect(Collection<T> messages) throws Exception {
+
+    }
+
+    @Override
+    public void close() throws Exception {
+
+    }
 }

@@ -17,8 +17,11 @@
  * under the License.
  */
 
-package org.openconnectors.util;
+package org.openconnectors.connect;
 
-public interface SourceConnectorContext extends ConnectorContext {
+public interface ConnectorContext {
 
+    String getConnectorId();
+    String getSessionId();
+    
 }

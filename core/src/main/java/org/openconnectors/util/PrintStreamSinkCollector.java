@@ -17,33 +17,34 @@
  * under the License.
  */
 
-package org.openconnectors.connect;
+package org.openconnectors.util;
+
+import org.openconnectors.config.Config;
+import org.openconnectors.stream.PrintStreamSink;
 
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
 
 /**
- * Sink abstract connector meant to be at the end of DAG pipeline
- * i.e write data to persistent store
- *
- * @param <T>
- * @param <U>
+ * Stdout sink wrapped in a source collector
  */
-public abstract class SinkConnector<U> extends Connector {
+public class PrintStreamSinkCollector extends SinkCollector<String> {
 
-    /**
-     * Attempt to publish a type safe collection of messages
-     *
-     * @param messages
-     * @return
-     */
-    public abstract CompletableFuture<Void> publish(final Collection<U> messages);
+    public PrintStreamSinkCollector() {
+        super(new PrintStreamSink());
+    }
 
-    /**
-     * Explicit flush useful in being called before closing the sink
-     *
-     * @throws Exception
-     */
-    public abstract void flush() throws Exception;
+    @Override
+    public void setup(Config config) throws Exception {
+        this.getSink().open(config);
+    }
 
+    @Override
+    public void collect(Collection messages) throws Exception {
+        this.getSink().publish(messages);
+    }
+
+    @Override
+    public void close() throws Exception {
+        this.getSink().close();
+    }
 }

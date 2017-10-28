@@ -21,29 +21,37 @@ package org.openconnectors.stream;
 
 import org.apache.commons.lang3.NotImplementedException;
 import org.openconnectors.config.Config;
-import org.openconnectors.connect.SourceCollector;
+import org.openconnectors.connect.Collector;
 import org.openconnectors.connect.SourceConnector;
-import org.openconnectors.util.SourceConnectorContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class StdInputStreamSource extends SourceConnector<SourceConnectorContext, String> {
+/**
+ * Sample Source connector polling std in a background thread will 100 ms poll cycle
+ *
+ * Lifecycle is init -> open -> run -> (pause if required) -> close
+ *
+ */
+public class StdInputStreamSource extends SourceConnector<String> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(StdInputStreamSource.class);
+    private static final long MAX_BACKOFF_SLEEP = 100;
 
     private InputStream stream;
     private InputStreamReader streamReader;
     private BufferedReader bufferedReader;
     private AtomicLong linesRead;
-
-    @Override
-    public Collection<String> poll() throws Exception {
-        throw new NotImplementedException("Not Implemented");
-    }
+    private AtomicBoolean isRunning;
+    private Thread runnerThread;
+    private AtomicBoolean isStarted;
 
     @Override
     public void open(Config config) throws Exception {
@@ -51,31 +59,73 @@ public class StdInputStreamSource extends SourceConnector<SourceConnectorContext
         streamReader = new InputStreamReader(stream);
         bufferedReader = new BufferedReader(streamReader);
         linesRead = new AtomicLong(0);
+        isRunning = new AtomicBoolean();
+        isStarted = new AtomicBoolean();
+        runnerThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                LOG.info("Polling Source opened");
+                while (true) {
+                    try {
+                        if (bufferedReader.ready()) {
+                            linesRead.incrementAndGet();
+                            getCollector().collect(Collections.singleton(bufferedReader.readLine()));
+                        }
+                        Thread.sleep(MAX_BACKOFF_SLEEP);
+                    } catch (Exception e) {
+                        LOG.error("Unhandled exception, logging and sleeping for " + MAX_BACKOFF_SLEEP + "ms", e);
+                        try {
+                            Thread.sleep(MAX_BACKOFF_SLEEP);
+                        } catch (InterruptedException ex) {
+                            Thread.currentThread().interrupt();
+                        }
+                    }
+                }
+            }
+
+        });
+        runnerThread.setName("SourceRunner");
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws Exception {
+        LOG.info("Source closed");
+        runnerThread.interrupt();
+        runnerThread.join();
+        bufferedReader.close();
+        streamReader.close();
         stream.close();
     }
 
     @Override
-    public void start(SourceCollector<String> collector) throws Exception {
-        while (true) {
-            Thread.sleep(10);
-            if (bufferedReader.ready()) {
-                linesRead.incrementAndGet();
-                collector.collect(Collections.singleton(bufferedReader.readLine()));
-            }
+    public void pause() throws Exception {
+        LOG.info("Source paused");
+        if (isRunning.get() != false) {
+            isRunning.set(false);
+            runnerThread.wait();
         }
-    }
-
-    @Override
-    public void stop() throws Exception {
-        throw new NotImplementedException("Not Implemented");
     }
 
     @Override
     public String getVersion() {
         return StdStreamConVer.getVersion();
+    }
+
+    @Override
+    public void run() throws Exception {
+        LOG.info("Source started");
+        if(isStarted.get() == false){
+            synchronized (runnerThread) {
+                runnerThread.start();
+            }
+            isStarted.set(true);
+            isRunning.set(true);
+        }
+        if (isRunning.get() == false) {
+            isRunning.set(true);
+            synchronized (runnerThread) {
+                runnerThread.notify();
+            }
+        }
     }
 }
