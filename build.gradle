@@ -131,3 +131,10 @@ project(':jdbc') {
 		compile project(':core')
 	}
 }
+
+//Twitter
+project(':twitter') {
+	dependencies {
+		compile project(':core')
+	}
+}

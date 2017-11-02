@@ -1,0 +1,3 @@
+dependencies {
+    compile 'com.twitter:hbc-core:2.2.0'
+}
