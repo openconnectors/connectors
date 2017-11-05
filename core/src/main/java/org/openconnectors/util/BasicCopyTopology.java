@@ -20,29 +20,45 @@
 package org.openconnectors.util;
 
 import org.openconnectors.config.Config;
+import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.connect.SourceConnector;
+
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.function.Function;
 
 /**
  * Copy Topology template targeting unit testing
  */
-public class BasicCopyTopology<T> {
+public class BasicCopyTopology<I, O> {
 
-    private SourceConnector<T> source;
-    private SinkCollector<T> sinkCollector;
+    private SourceConnector<I> source;
+    private SinkConnector<O> sink;
+    private Function<I, O> transformer;
 
-    public BasicCopyTopology(SourceConnector<T> source, SinkCollector<T> sink) {
+    public BasicCopyTopology(SourceConnector<I> source, SinkConnector<O> sink,
+                             Function<I, O> transformer) {
         this.source = source;
-        this.sinkCollector = sink;
+        this.sink = sink;
+        this.transformer = transformer;
     }
 
     public void setup(Config config) throws Exception {
         this.source.open(config);
-        this.sinkCollector.getSink().open(config);
-        this.source.setCollector(this.sinkCollector);
+        this.sink.open(config);
     }
 
     public void run() throws Exception {
-        this.source.run();
+        while (true) {
+            Collection<I> messages = source.fetch();
+            if (messages != null) {
+                Collection<O> output = new LinkedList<>();
+                for (I message : messages) {
+                    output.add(transformer.apply(message));
+                }
+                sink.publish(output);
+            }
+        }
     }
 
 }

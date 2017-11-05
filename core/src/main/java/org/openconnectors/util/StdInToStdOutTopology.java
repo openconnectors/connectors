@@ -20,15 +20,16 @@
 package org.openconnectors.util;
 
 import org.openconnectors.config.ConfigProvider;
-import org.openconnectors.stream.StdInputStreamSource;
+import org.openconnectors.stdconnectors.StdinSource;
+import org.openconnectors.stdconnectors.StdoutSink;
 
 /**
  * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public class StdInToStdOutTopology extends BasicCopyTopology<String>{
+public class StdInToStdOutTopology extends BasicCopyTopology<String, String>{
 
     public StdInToStdOutTopology() {
-        super(new StdInputStreamSource(), new PrintStreamSinkCollector());
+        super(new StdinSource(), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {

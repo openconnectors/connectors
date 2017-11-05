@@ -20,8 +20,6 @@
 package org.openconnectors.connect;
 
 public interface ConnectorContext {
-
     String getConnectorId();
     String getSessionId();
-    
 }

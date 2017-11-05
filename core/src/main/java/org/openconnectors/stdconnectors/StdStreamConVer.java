@@ -17,33 +17,13 @@
  * under the License.
  */
 
-package org.openconnectors.util;
+package org.openconnectors.stdconnectors;
 
-import org.openconnectors.config.Config;
-import org.openconnectors.connect.Collector;
+public class StdStreamConVer {
 
-import java.util.Collection;
+    private static final String VERSION = "org.openconnectors.streams-0.0.1";
 
-/**
- *
- * Empty Source collector meant for test fixtures
- *
- * @param <T>
- */
-public class NullCollector<T> implements Collector<T> {
-
-    @Override
-    public void setup(Config config) throws Exception {
-
-    }
-
-    @Override
-    public void collect(Collection<T> messages) throws Exception {
-
-    }
-
-    @Override
-    public void close() throws Exception {
-
+    public static String getVersion() {
+        return VERSION;
     }
 }
