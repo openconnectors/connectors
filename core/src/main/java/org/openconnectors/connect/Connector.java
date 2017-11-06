@@ -28,7 +28,7 @@ import java.io.Serializable;
  * The lifcycle of a connector is to initialize with a connector context
  * open it for processing and then close it at the end of the session
  */
-public interface Connector extends Versionable, Serializable {
+public interface Connector extends AutoCloseable, Versionable, Serializable {
     /**
      * First method to call in the lifecycle of the object
      *
@@ -43,11 +43,4 @@ public interface Connector extends Versionable, Serializable {
      * @throws Exception
      */
     public abstract void open(final Config config) throws Exception;
-
-    /**
-     * Close the connector
-     *
-     * @throws Exception
-     */
-    public void close() throws Exception;
 }
