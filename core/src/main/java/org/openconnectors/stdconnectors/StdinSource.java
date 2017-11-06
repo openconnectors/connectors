@@ -21,7 +21,7 @@ package org.openconnectors.stdconnectors;
 
 import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
-import org.openconnectors.connect.SourceConnector;
+import org.openconnectors.connect.PullSourceConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Lifecycle is init -> open -> run -> (pause if required) -> close
  *
  */
-public class StdinSource implements SourceConnector<String> {
+public class StdinSource implements PullSourceConnector<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(StdinSource.class);
 

@@ -20,16 +20,16 @@
 package org.openconnectors.twitter;
 
 import org.openconnectors.config.ConfigProvider;
+import org.openconnectors.stdconnectors.StdoutSink;
 import org.openconnectors.util.BasicCopyTopology;
-import org.openconnectors.util.PrintStreamSinkCollector;
 
 /**
  * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public class TwitterFireHoseToStdOutTopology extends BasicCopyTopology<String> {
+public class TwitterFireHoseToStdOutTopology extends BasicCopyTopology<String, String> {
 
     public TwitterFireHoseToStdOutTopology() {
-        super(new TwitterFireHose(), new PrintStreamSinkCollector());
+        super(new TwitterFireHose(), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {

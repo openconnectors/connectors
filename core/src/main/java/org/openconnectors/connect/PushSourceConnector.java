@@ -1,6 +1,7 @@
 package org.openconnectors.connect;
 
 import java.util.Collection;
+import java.util.function.Consumer;
 
 /**
  * Source Connector meant be the start of a DAG pipeline, after initilization is configured with a collector
@@ -8,6 +9,6 @@ import java.util.Collection;
  *
  * @param <T>
  */
-public interface SourceConnector<T> extends Connector {
-    Collection<T> fetch() throws Exception;
+public interface PushSourceConnector<T> extends Connector {
+    void setConsumer(Consumer<Collection<T>> consumeFunction);
 }

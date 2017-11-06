@@ -20,8 +20,9 @@
 package org.openconnectors.util;
 
 import org.openconnectors.config.Config;
+import org.openconnectors.connect.PushSourceConnector;
 import org.openconnectors.connect.SinkConnector;
-import org.openconnectors.connect.SourceConnector;
+import org.openconnectors.connect.PullSourceConnector;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -32,32 +33,43 @@ import java.util.function.Function;
  */
 public class BasicCopyTopology<I, O> {
 
-    private SourceConnector<I> source;
+    private PullSourceConnector<I> pullSource;
     private SinkConnector<O> sink;
     private Function<I, O> transformer;
 
-    public BasicCopyTopology(SourceConnector<I> source, SinkConnector<O> sink,
+    public BasicCopyTopology(PullSourceConnector<I> source, SinkConnector<O> sink,
                              Function<I, O> transformer) {
-        this.source = source;
+        this.pullSource = source;
+        this.sink = sink;
+        this.transformer = transformer;
+    }
+
+    public BasicCopyTopology(PushSourceConnector<I> source, SinkConnector<O> sink,
+                             Function<I, O> transformer) {
+        this.pullSource = new PullWrapperOnPushSource<>(source, 1024 * 1024, PullWrapperOnPushSource.BufferStrategy.BLOCK);
         this.sink = sink;
         this.transformer = transformer;
     }
 
     public void setup(Config config) throws Exception {
-        this.source.open(config);
+        this.pullSource.open(config);
         this.sink.open(config);
     }
 
     public void run() throws Exception {
         while (true) {
-            Collection<I> messages = source.fetch();
-            if (messages != null) {
-                Collection<O> output = new LinkedList<>();
-                for (I message : messages) {
-                    output.add(transformer.apply(message));
-                }
-                sink.publish(output);
+            Collection<I> messages = pullSource.fetch();
+            consume(messages);
+        }
+    }
+
+    private void consume(Collection<I> messages) {
+        if (messages != null) {
+            Collection<O> output = new LinkedList<>();
+            for (I message : messages) {
+                output.add(transformer.apply(message));
             }
+            sink.publish(output);
         }
     }
 
