@@ -31,21 +31,21 @@ import java.util.function.Function;
 /**
  * Copy Topology template targeting unit testing
  */
-public class BasicCopyTopology<I, O> {
+public class SimpleCopier<I, O> {
 
     private PullSourceConnector<I> pullSource;
     private SinkConnector<O> sink;
     private Function<I, O> transformer;
 
-    public BasicCopyTopology(PullSourceConnector<I> source, SinkConnector<O> sink,
-                             Function<I, O> transformer) {
+    public SimpleCopier(PullSourceConnector<I> source, SinkConnector<O> sink,
+                        Function<I, O> transformer) {
         this.pullSource = source;
         this.sink = sink;
         this.transformer = transformer;
     }
 
-    public BasicCopyTopology(PushSourceConnector<I> source, SinkConnector<O> sink,
-                             Function<I, O> transformer) {
+    public SimpleCopier(PushSourceConnector<I> source, SinkConnector<O> sink,
+                        Function<I, O> transformer) {
         this.pullSource = new PullWrapperOnPushSource<>(source, 1024 * 1024, PullWrapperOnPushSource.BufferStrategy.BLOCK);
         this.sink = sink;
         this.transformer = transformer;

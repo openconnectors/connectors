@@ -21,19 +21,19 @@ package org.openconnectors.twitter;
 
 import org.openconnectors.config.ConfigProvider;
 import org.openconnectors.stdconnectors.StdoutSink;
-import org.openconnectors.util.BasicCopyTopology;
+import org.openconnectors.util.SimpleCopier;
 
 /**
  * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public class TwitterFireHoseToStdOutTopology extends BasicCopyTopology<String, String> {
+public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String> {
 
-    public TwitterFireHoseToStdOutTopology() {
+    public TwitterFireHoseToStdOutCopier() {
         super(new TwitterFireHose(), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {
-        TwitterFireHoseToStdOutTopology instance = new TwitterFireHoseToStdOutTopology();
+        TwitterFireHoseToStdOutCopier instance = new TwitterFireHoseToStdOutCopier();
         instance.setup(new ConfigProvider());
         instance.run();
     }

@@ -26,14 +26,14 @@ import org.openconnectors.stdconnectors.StdoutSink;
 /**
  * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public class StdInToStdOutTopology extends BasicCopyTopology<String, String>{
+public class StdInToStdOutCopier extends SimpleCopier<String, String> {
 
-    public StdInToStdOutTopology() {
+    public StdInToStdOutCopier() {
         super(new StdinSource(), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {
-        StdInToStdOutTopology instance = new StdInToStdOutTopology();
+        StdInToStdOutCopier instance = new StdInToStdOutCopier();
         instance.setup(new ConfigProvider());
         instance.run();
     }
