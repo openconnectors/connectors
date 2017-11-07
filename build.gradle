@@ -138,3 +138,10 @@ project(':twitter') {
 		compile project(':core')
 	}
 }
+
+//Aerospike
+project(':aerospike') {
+	dependencies {
+		compile project(':core')
+	}
+}
