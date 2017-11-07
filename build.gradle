@@ -145,3 +145,12 @@ project(':aerospike') {
 		compile project(':core')
 	}
 }
+
+//Examples
+project(':examples') {
+	dependencies {
+		compile project(':core')
+		compile project(':aerospike')
+		compile project(':twitter')
+	}
+}

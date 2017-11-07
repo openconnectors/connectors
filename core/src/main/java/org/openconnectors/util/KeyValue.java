@@ -23,7 +23,6 @@ package org.openconnectors.util;
  *
  * Empty Source collector meant for test fixtures
  *
- * @param <T>
  */
 public class KeyValue<K, V> {
     private K key;

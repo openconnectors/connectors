@@ -17,23 +17,24 @@
  * under the License.
  */
 
-package org.openconnectors.util;
+package org.openconnectors.aerospike;
 
 import org.openconnectors.config.ConfigProvider;
 import org.openconnectors.stdconnectors.StdinSource;
-import org.openconnectors.stdconnectors.StdoutSink;
+import org.openconnectors.util.KeyValue;
+import org.openconnectors.util.SimpleCopier;
 
 /**
- * Basic topology to copy data fro stdin to std out, useful for experimentation
+ * Basic topology to copy data fro stdin to aerospike, useful for experimentation
  */
-public class StdInToStdOutCopier extends SimpleCopier<String, String> {
+public class StdInToAerospikeTopology extends SimpleCopier<String, KeyValue<String, String>> {
 
-    public StdInToStdOutCopier() {
-        super(new StdinSource(), new StdoutSink(), x -> x);
+    public StdInToAerospikeTopology() {
+        super(new StdinSource(), new AerospikeSink<>(), x -> new KeyValue<>(x, x));
     }
 
     public static void main(String[] args) throws Exception {
-        StdInToStdOutCopier instance = new StdInToStdOutCopier();
+        StdInToAerospikeTopology instance = new StdInToAerospikeTopology();
         instance.setup(new ConfigProvider());
         instance.run();
     }
