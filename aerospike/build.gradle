@@ -1,0 +1,3 @@
+dependencies {
+    compile 'com.aerospike:aerospike-client:4.0.8'
+}
