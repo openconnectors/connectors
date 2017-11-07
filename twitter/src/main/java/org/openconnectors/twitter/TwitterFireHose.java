@@ -43,10 +43,7 @@ import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
 /**
- * Sample Source connector polling std in a background thread will 100 ms poll cycle
- *
- * Lifecycle is init -> open -> run -> (pause if required) -> close
- *
+ * Simple Push based Twitter FireHose Source
  */
 public class TwitterFireHose implements PushSourceConnector<String> {
 
@@ -114,7 +111,7 @@ public class TwitterFireHose implements PushSourceConnector<String> {
     }
 
     /**
-     * Default endpoint initializer returning the {@see StatusesSampleEndpoint}.
+     * Required for Twitter Client
      */
     private static class SampleStatusesEndpoint implements EndpointInitializer, Serializable {
         @Override

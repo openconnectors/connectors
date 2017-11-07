@@ -25,7 +25,7 @@ import org.openconnectors.util.KeyValue;
 import org.openconnectors.util.SimpleCopier;
 
 /**
- * Basic topology to copy data fro stdin to std out, useful for experimentation
+ * Basic topology to copy data fro stdin to aerospike, useful for experimentation
  */
 public class StdInToAerospikeTopology extends SimpleCopier<String, KeyValue<String, String>> {
 

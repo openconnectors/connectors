@@ -35,8 +35,6 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Sample Source connector polling std in a background thread will 100 ms poll cycle
  *
- * Lifecycle is init -> open -> run -> (pause if required) -> close
- *
  */
 public class StdinSource implements PullSourceConnector<String> {
 

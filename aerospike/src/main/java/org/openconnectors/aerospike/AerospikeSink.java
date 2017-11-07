@@ -33,10 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Sample Source connector polling std in a background thread will 100 ms poll cycle
- *
- * Lifecycle is init -> open -> run -> (pause if required) -> close
- *
+ * Simple aerospike sink
  */
 public class AerospikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 

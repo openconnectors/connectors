@@ -31,8 +31,6 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Sample Sink to print to std out
  *
- * lifcycle is init -> open -> close
- *
  */
 public class StdoutSink implements SinkConnector<String> {
 
