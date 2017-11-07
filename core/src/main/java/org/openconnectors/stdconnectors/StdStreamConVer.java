@@ -17,26 +17,13 @@
  * under the License.
  */
 
-package org.openconnectors.util;
+package org.openconnectors.stdconnectors;
 
-import org.openconnectors.connect.Collector;
-import org.openconnectors.connect.SinkConnector;
+public class StdStreamConVer {
 
-/**
- * A sink being wrapped in the source collector interface
- *
- * @param <U>
- */
-public abstract class SinkCollector<U> implements Collector<U> {
+    private static final String VERSION = "org.openconnectors.streams-0.0.1";
 
-    private SinkConnector<U> sink;
-
-    public SinkCollector(SinkConnector<U> sink){
-        this.sink = sink;
+    public static String getVersion() {
+        return VERSION;
     }
-
-    public SinkConnector<U> getSink() {
-        return sink;
-    }
-
 }

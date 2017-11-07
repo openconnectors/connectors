@@ -17,33 +17,12 @@
  * under the License.
  */
 
-package org.openconnectors.util;
+package org.openconnectors.stdconnectors;
 
-import org.openconnectors.config.Config;
-import org.openconnectors.connect.Collector;
+public class ConfigKeys {
 
-import java.util.Collection;
+    public static final String DEFAULT_OUTPUT_FORMAT = "[%s] %s";
+    public static final String OUTPUT_FORMAT_KEY = "std.out.format";
 
-/**
- *
- * Empty Source collector meant for test fixtures
- *
- * @param <T>
- */
-public class NullCollector<T> implements Collector<T> {
-
-    @Override
-    public void setup(Config config) throws Exception {
-
-    }
-
-    @Override
-    public void collect(Collection<T> messages) throws Exception {
-
-    }
-
-    @Override
-    public void close() throws Exception {
-
-    }
+    private ConfigKeys() {}
 }

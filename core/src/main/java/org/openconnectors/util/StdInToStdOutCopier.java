@@ -19,30 +19,22 @@
 
 package org.openconnectors.util;
 
-import org.openconnectors.config.Config;
-import org.openconnectors.connect.SourceConnector;
+import org.openconnectors.config.ConfigProvider;
+import org.openconnectors.stdconnectors.StdinSource;
+import org.openconnectors.stdconnectors.StdoutSink;
 
 /**
- * Copy Topology template targeting unit testing
+ * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public class BasicCopyTopology<T> {
+public class StdInToStdOutCopier extends SimpleCopier<String, String> {
 
-    private SourceConnector<T> source;
-    private SinkCollector<T> sinkCollector;
-
-    public BasicCopyTopology(SourceConnector<T> source, SinkCollector<T> sink) {
-        this.source = source;
-        this.sinkCollector = sink;
+    public StdInToStdOutCopier() {
+        super(new StdinSource(), new StdoutSink(), x -> x);
     }
 
-    public void setup(Config config) throws Exception {
-        this.source.open(config);
-        this.sinkCollector.getSink().open(config);
-        this.source.setCollector(this.sinkCollector);
+    public static void main(String[] args) throws Exception {
+        StdInToStdOutCopier instance = new StdInToStdOutCopier();
+        instance.setup(new ConfigProvider());
+        instance.run();
     }
-
-    public void run() throws Exception {
-        this.source.run();
-    }
-
 }

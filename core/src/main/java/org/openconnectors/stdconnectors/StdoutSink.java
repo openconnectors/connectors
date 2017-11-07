@@ -17,9 +17,10 @@
  * under the License.
  */
 
-package org.openconnectors.stream;
+package org.openconnectors.stdconnectors;
 
 import org.openconnectors.config.Config;
+import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 
 import java.io.PrintStream;
@@ -33,11 +34,16 @@ import java.util.concurrent.atomic.AtomicLong;
  * lifcycle is init -> open -> close
  *
  */
-public class PrintStreamSink extends SinkConnector<String> {
+public class StdoutSink implements SinkConnector<String> {
 
     private String outputFormat;
     private AtomicLong linesReceived;
     private PrintStream stream = System.out;
+
+    @Override
+    public void initialize(ConnectorContext ctx) {
+        // nothing really
+    }
 
     @Override
     public CompletableFuture<Void> publish(Collection<String> messages) {

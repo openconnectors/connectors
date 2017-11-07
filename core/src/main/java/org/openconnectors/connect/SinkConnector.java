@@ -26,10 +26,9 @@ import java.util.concurrent.CompletableFuture;
  * Sink abstract connector meant to be at the end of DAG pipeline
  * i.e write data to persistent store
  *
- * @param <T>
  * @param <U>
  */
-public abstract class SinkConnector<U> extends Connector {
+public interface SinkConnector<U> extends Connector {
 
     /**
      * Attempt to publish a type safe collection of messages
@@ -37,13 +36,12 @@ public abstract class SinkConnector<U> extends Connector {
      * @param messages
      * @return
      */
-    public abstract CompletableFuture<Void> publish(final Collection<U> messages);
+    CompletableFuture<Void> publish(final Collection<U> messages);
 
     /**
      * Explicit flush useful in being called before closing the sink
      *
      * @throws Exception
      */
-    public abstract void flush() throws Exception;
-
+    void flush() throws Exception;
 }

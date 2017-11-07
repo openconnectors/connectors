@@ -22,13 +22,15 @@ package org.openconnectors.twitter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import com.twitter.hbc.core.endpoint.StatusesSampleEndpoint;
 import com.twitter.hbc.core.endpoint.StreamingEndpoint;
 import org.openconnectors.config.Config;
-import org.openconnectors.connect.SourceConnector;
+import org.openconnectors.connect.ConnectorContext;
+import org.openconnectors.connect.PushSourceConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +48,7 @@ import com.twitter.hbc.httpclient.auth.OAuth1;
  * Lifecycle is init -> open -> run -> (pause if required) -> close
  *
  */
-public class TwitterFireHose extends SourceConnector<String> {
+public class TwitterFireHose implements PushSourceConnector<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TwitterFireHose.class);
     public static final String CONSUMER_KEY = "twitter-source.consumerKey";
@@ -68,9 +70,14 @@ public class TwitterFireHose extends SourceConnector<String> {
     // ----- Fields set by the constructor
 
     // ----- Runtime fields
-    private AtomicBoolean isRunning;
     private Object waitObject;
-    private Config config;
+    private Consumer<Collection<String>> consumeFunction;
+
+
+    @Override
+    public void initialize(ConnectorContext ctx) {
+        // Nothing really
+    }
 
     @Override
     public void open(Config config) throws Exception {
@@ -79,8 +86,12 @@ public class TwitterFireHose extends SourceConnector<String> {
         verifyExists(config, TOKEN);
         verifyExists(config, TOKEN_SECRET);
         waitObject = new Object();
-        isRunning = new AtomicBoolean();
-        this.config = config;
+        startThread(config);
+    }
+
+    @Override
+    public void setConsumer(Consumer<Collection<String>> consumeFunction) {
+        this.consumeFunction = consumeFunction;
     }
 
     @Override
@@ -89,25 +100,8 @@ public class TwitterFireHose extends SourceConnector<String> {
     }
 
     @Override
-    public void pause() throws Exception {
-        LOG.info("Source paused");
-        if (isRunning.get() != false) {
-            stopThread();
-            isRunning.set(false);
-        }
-    }
-
-    @Override
     public String getVersion() {
         return "0.0.1";
-    }
-
-    @Override
-    public void run() throws Exception {
-        if(isRunning.get() == false){
-            startThread(config);
-            isRunning.set(true);
-        }
     }
 
     // ------ Custom endpoints
@@ -156,7 +150,7 @@ public class TwitterFireHose extends SourceConnector<String> {
                     public boolean process() throws IOException, InterruptedException {
                         String line = reader.readLine();
                         try {
-                            getCollector().collect(Collections.singleton(line));
+                            consumeFunction.accept(Collections.singleton(line));
                         } catch (Exception e) {
                             LOG.error("Exception thrown");
                         }
@@ -173,14 +167,12 @@ public class TwitterFireHose extends SourceConnector<String> {
                 LOG.info("Twitter Streaming API connection established successfully");
 
                 // just wait now
-                while (isRunning.get()) {
-                    try {
-                        synchronized (waitObject) {
-                            waitObject.wait();
-                        }
-                    } catch (Exception e) {
-                        LOG.info("Got a exception in waitObject");
+                try {
+                    synchronized (waitObject) {
+                        waitObject.wait();
                     }
+                } catch (Exception e) {
+                    LOG.info("Got a exception in waitObject");
                 }
                 LOG.debug("Closing Twitter Streaming API connection");
                 client.stop();
