@@ -67,11 +67,6 @@ public class AerospikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     private WritePolicy writePolicy;
 
     @Override
-    public void initialize(ConnectorContext ctx) {
-        // Nothing really
-    }
-
-    @Override
     public void open(Config config) throws Exception {
         verifyExists(config, AEROSPIKE_SEEDHOSTS);
         verifyExists(config, AEROSPIKE_KEYSPACE);
