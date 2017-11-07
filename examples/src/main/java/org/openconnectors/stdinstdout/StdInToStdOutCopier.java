@@ -17,11 +17,12 @@
  * under the License.
  */
 
-package org.openconnectors.util;
+package org.openconnectors.stdinstdout;
 
 import org.openconnectors.config.ConfigProvider;
 import org.openconnectors.stdconnectors.StdinSource;
 import org.openconnectors.stdconnectors.StdoutSink;
+import org.openconnectors.util.SimpleCopier;
 
 /**
  * Basic topology to copy data fro stdin to std out, useful for experimentation
