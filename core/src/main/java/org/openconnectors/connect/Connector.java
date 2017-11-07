@@ -30,13 +30,6 @@ import java.io.Serializable;
  */
 public interface Connector extends AutoCloseable, Versionable, Serializable {
     /**
-     * First method to call in the lifecycle of the object
-     *
-     * @param ctx
-     */
-    public void initialize(final ConnectorContext ctx);
-
-    /**
      * Open connector with configuration
      *
      * @param config

@@ -70,12 +70,6 @@ public class TwitterFireHose implements PushSourceConnector<String> {
     private Object waitObject;
     private Consumer<Collection<String>> consumeFunction;
 
-
-    @Override
-    public void initialize(ConnectorContext ctx) {
-        // Nothing really
-    }
-
     @Override
     public void open(Config config) throws Exception {
         verifyExists(config, CONSUMER_KEY);

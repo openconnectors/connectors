@@ -37,12 +37,7 @@ public class StdoutSink implements SinkConnector<String> {
     private String outputFormat;
     private AtomicLong linesReceived;
     private PrintStream stream = System.out;
-
-    @Override
-    public void initialize(ConnectorContext ctx) {
-        // nothing really
-    }
-
+    
     @Override
     public CompletableFuture<Void> publish(Collection<String> messages) {
         return CompletableFuture.runAsync(() -> {

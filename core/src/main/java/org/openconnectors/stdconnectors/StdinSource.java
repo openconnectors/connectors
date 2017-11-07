@@ -46,11 +46,6 @@ public class StdinSource implements PullSourceConnector<String> {
     private AtomicLong linesRead;
 
     @Override
-    public void initialize(ConnectorContext ctx) {
-        // nothing really
-    }
-
-    @Override
     public void open(Config config) throws Exception {
         stream = System.in;
         streamReader = new InputStreamReader(stream);
