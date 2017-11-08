@@ -47,7 +47,7 @@ public class TwitterFireHoseStreamlet implements Source<String> {
         try {
             pullHose.open(new ConfigProvider());
         } catch (Exception e) {
-            throw new RuntimeException("Exception during setup of Twitter Source");
+            throw new RuntimeException("Exception during setup of Twitter Source", e);
         }
     }
 
