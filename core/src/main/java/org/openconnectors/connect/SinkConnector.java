@@ -26,22 +26,22 @@ import java.util.concurrent.CompletableFuture;
  * Sink abstract connector meant to be at the end of DAG pipeline
  * i.e write data to persistent store
  *
- * @param <U>
+ * @param <U> Type for messages to be submitted for publishing
  */
 public interface SinkConnector<U> extends Connector {
 
     /**
      * Attempt to publish a type safe collection of messages
      *
-     * @param messages
-     * @return
+     * @param messages Objects to process in the sink
+     * @return Completable future fo async publish request
      */
     CompletableFuture<Void> publish(final Collection<U> messages);
 
     /**
      * Explicit flush useful in being called before closing the sink
      *
-     * @throws Exception
+     * @throws Exception Generally IO type exceptions if flush fails
      */
     void flush() throws Exception;
 }
