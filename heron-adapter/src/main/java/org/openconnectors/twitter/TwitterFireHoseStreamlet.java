@@ -53,7 +53,7 @@ public class TwitterFireHoseStreamlet implements Source<String> {
 
     @Override
     public String get() {
-        if (buffer.isEmpty()) {
+        if (buffer == null || buffer.isEmpty()) {
             try {
                 buffer = pullHose.fetch();
             } catch (Exception e) {
