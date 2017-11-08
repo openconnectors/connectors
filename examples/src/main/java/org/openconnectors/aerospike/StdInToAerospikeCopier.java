@@ -27,14 +27,14 @@ import org.openconnectors.util.SimpleCopier;
 /**
  * Basic topology to copy data fro stdin to aerospike, useful for experimentation
  */
-public class StdInToAerospikeTopology extends SimpleCopier<String, KeyValue<String, String>> {
+public class StdInToAerospikeCopier extends SimpleCopier<String, KeyValue<String, String>> {
 
-    public StdInToAerospikeTopology() {
+    public StdInToAerospikeCopier() {
         super(new StdinSource(), new AerospikeSink<>(), x -> new KeyValue<>(x, x));
     }
 
     public static void main(String[] args) throws Exception {
-        StdInToAerospikeTopology instance = new StdInToAerospikeTopology();
+        StdInToAerospikeCopier instance = new StdInToAerospikeCopier();
         instance.setup(new ConfigProvider());
         instance.run();
     }
