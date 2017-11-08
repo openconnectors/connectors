@@ -146,11 +146,21 @@ project(':aerospike') {
 	}
 }
 
+//Heron Adapters
+project(':heron-adapter') {
+	dependencies {
+		compile project(':core')
+		compile project(':aerospike')
+		compile project(':twitter')
+	}
+}
+
 //Examples
 project(':examples') {
 	dependencies {
 		compile project(':core')
 		compile project(':aerospike')
 		compile project(':twitter')
+		compile project(':heron-adapter')
 	}
 }
