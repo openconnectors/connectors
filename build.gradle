@@ -167,6 +167,15 @@ project(':examples') {
 		compile project(':core')
 		compile project(':aerospike')
 		compile project(':twitter')
-		compile project(':heron-adapter')
 	}
+}
+
+//Examples
+project(':examples-heron') {
+    dependencies {
+        compile project(':core')
+        compile project(':aerospike')
+        compile project(':twitter')
+        compile project(':heron-adapter')
+    }
 }

@@ -1,2 +1,2 @@
-include ":core", ":heron-adapter", ":pulsar", ":kafka", ":jdbc", ":twitter", ":aerospike", ":examples"
+include ":core", ":heron-adapter", ":pulsar", ":kafka", ":jdbc", ":twitter", ":aerospike", ":examples", ":examples-heron"
 

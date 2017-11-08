@@ -1,0 +1,3 @@
+dependencies {
+    compile group: 'com.twitter.heron', name: 'heron-api', version: '0.16.5'
+}
