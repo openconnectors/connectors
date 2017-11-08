@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.openconnectors.aerospike.AeroSpikeConfigKeys.*;
+import static org.openconnectors.config.ConfigUtils.verifyExists;
 
 /**
  * Simple AeroSpike sink
@@ -55,6 +56,7 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public void open(Config config) throws Exception {
+        LOG.info("Opening Connection");
         verifyExists(config, AEROSPIKE_SEEDHOSTS);
         verifyExists(config, AEROSPIKE_KEYSPACE);
         verifyExists(config, AEROSPIKE_COLUMNNAME);
@@ -70,6 +72,7 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     @Override
     public void close() throws Exception {
         client.close();
+        LOG.info("Connection Closed");
     }
 
     @Override
@@ -90,21 +93,15 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     @Override
     public void flush() { }
 
-    private void verifyExists(Config config, String key) {
-        if (config.getString(key) == null) {
-            throw new IllegalArgumentException("Required property '" + key + "' not set.");
-        }
-    }
-
     private void createClient(Config config) {
         String[] hosts = config.getString(AEROSPIKE_SEEDHOSTS).split(",");
         if (hosts.length <= 0) {
-            throw new RuntimeException("Invalid seedhosts");
+            throw new RuntimeException("Invalid Seed Hosts");
         }
-        Host[] aerospikeHosts = new Host[hosts.length];
+        Host[] aeroSpikeHosts = new Host[hosts.length];
         for (int i = 0; i < hosts.length; ++i) {
             String[] hostPort = hosts[i].split(":");
-            aerospikeHosts[i] = new Host(hostPort[0], Integer.valueOf(hostPort[1]));
+            aeroSpikeHosts[i] = new Host(hostPort[0], Integer.valueOf(hostPort[1]));
         }
         ClientPolicy policy = new ClientPolicy();
         if (!config.getString(AEROSPIKE_USERNAME, "").isEmpty()
@@ -112,6 +109,6 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
             policy.user = config.getString(AEROSPIKE_USERNAME);
             policy.password = config.getString(AEROSPIKE_PASSWORD);
         }
-        client = new AerospikeClient(policy, aerospikeHosts);
+        client = new AerospikeClient(policy, aeroSpikeHosts);
     }
 }
