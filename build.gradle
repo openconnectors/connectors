@@ -24,7 +24,7 @@ subprojects {
 	targetCompatibility = 1.8
 
     group   = 'org.openconnectors.connectors'
-    version = '0.0.' + getVersionTag()
+    version = System.env['CONNECTOR_VERION'] ?: '0.0.' + getVersionTag()
 
 	repositories {
 		jcenter()
