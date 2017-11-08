@@ -1,3 +1,7 @@
+plugins {
+	id "com.github.johnrengelman.shadow" version "2.0.1"
+}
+
 allprojects {
 
 }
@@ -60,10 +64,12 @@ subprojects {
 	    archives javadocJar
 	}
 
-	task fatJar(type: Jar) {
-		baseName = project.name + '-uber'
-		from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-		with jar
+	apply plugin: 'com.github.johnrengelman.shadow'
+
+ 	shadowJar {
+    	mergeServiceFiles {
+      		include 'reference.conf'
+    	}
 	}
 
 	task createPom {
