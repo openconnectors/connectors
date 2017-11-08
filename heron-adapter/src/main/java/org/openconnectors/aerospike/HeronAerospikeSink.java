@@ -34,12 +34,12 @@ import java.util.Collections;
 public class HeronAerospikeSink<K, V> implements Sink<KeyValue<K, V>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeronAerospikeSink.class);
-    private AerospikeSink<K, V> sink;
+    private AeroSpikeSink<K, V> sink;
 
     @Override
     public void setup(Context ctx) {
         if (sink == null) {
-            sink = new AerospikeSink<>();
+            sink = new AeroSpikeSink<>();
         }
         try {
             sink.open(new ConfigProvider());

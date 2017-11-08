@@ -30,7 +30,7 @@ import org.openconnectors.util.SimpleCopier;
 public class StdInToAerospikeCopier extends SimpleCopier<String, KeyValue<String, String>> {
 
     public StdInToAerospikeCopier() {
-        super(new StdinSource(), new AerospikeSink<>(), x -> new KeyValue<>(x, x));
+        super(new StdinSource(), new AeroSpikeSink<>(), x -> new KeyValue<>(x, x));
     }
 
     public static void main(String[] args) throws Exception {

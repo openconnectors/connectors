@@ -32,32 +32,14 @@ import org.openconnectors.util.KeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.openconnectors.aerospike.AeroSpikeConfigKeys.*;
+
 /**
- * Simple aerospike sink
+ * Simple AeroSpike sink
  */
-public class AerospikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
+public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(AerospikeSink.class);
-
-    public static final String AEROSPIKE_SEEDHOSTS = "aerospike.seedhosts";
-
-    public static final String AEROSPIKE_KEYSPACE = "aerospike.keyspace";
-
-    public static final String AEROSPIKE_COLUMNNAME = "aerospike.columnname";
-
-    // ------ Optional property keys
-
-    public static final String AEROSPIKE_USERNAME = "aerospike.username";
-
-    public static final String AEROSPIKE_PASSWORD = "aerospike.password";
-
-    public static final String AEROSPIKE_KEYSET = "aerospike.keyset";
-
-    public static final String AEROSPIKE_WRITETIMEOUTMS = "aerospike.writetimeoutms";
-
-    public static final String AEROSPIKE_MAXRETRIES = "aerospike.maxretries";
-
-
+    private static final Logger LOG = LoggerFactory.getLogger(AeroSpikeSink.class);
 
     // ----- Runtime fields
     private AerospikeClient client;
@@ -92,7 +74,7 @@ public class AerospikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public String getVersion() {
-        return "0.0.1";
+        return AEROSPIKE_CONNECTOR_VERSION;
     }
 
     @Override
