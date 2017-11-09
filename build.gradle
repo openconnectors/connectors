@@ -169,23 +169,25 @@ project(':heron-adapter') {
 	}
 }
 
-//Examples
+//Examples local jvm
 project(':examples') {
 	dependencies {
 		compile project(':core')
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
+        compile project(':kafka')
 	}
 }
 
-//Examples
+//Examples heron toplogies
 project(':examples-heron') {
     dependencies {
 		compile project(':core')
+		compile project(':heron-adapter')
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-		compile project(':heron-adapter')
+        compile project(':kafka')
     }
 }

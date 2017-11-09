@@ -19,15 +19,27 @@
 
 package org.openconnectors.kafka;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
+
 public class ConfigKeys {
-    public static final String KAFKA_SINK_BOOTSTRAP_SERVERS = "kafka.sink.bootstrap_servers";
-    public static final String KAFKA_SINK_ACKS = "kafka.sink.acks";
-    public static final String KAFKA_SINK_BATCH_SIZE = "kafka.sink.batch_size";
-    public static final String KAFKA_SINK_MAX_REQUEST_SIZE = "kafka.sink.max_request_size";
-    public static final String KAFKA_SINK_TOPIC = "kafka.sink.topic";
-    public static final String KAFKA_SOURCE_BOOTSTRAP_SERVERS = "kafka.source.bootstrap_servers";
-    public static final String KAFKA_SOURCE_GROUP_ID = "kafka.source.group_id";
-    public static final String KAFKA_SOURCE_FETCH_MIN_BYTES = "kafka.source.fetch_min_bytes";
-    public static final String KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS = "kafka.source.auto_commit_interval_ms";
-    public static final String KAFKA_SOURCE_SESSION_TIMEOUT_MS = "kafka.source.session_timeout_ms";
+
+    private static final String KAFKA_SINK_PREFIX = "kafka.sink.";
+    private static final String KAFKA_SOURCE_PREFIX = "kafka.source.";
+
+    //Producer Configs
+    public static final String KAFKA_SINK_BOOTSTRAP_SERVERS = KAFKA_SINK_PREFIX + ProducerConfig.BOOTSTRAP_SERVERS_CONFIG;
+    public static final String KAFKA_SINK_ACKS = KAFKA_SINK_PREFIX + ProducerConfig.ACKS_CONFIG;
+    public static final String KAFKA_SINK_BATCH_SIZE = KAFKA_SINK_PREFIX + ProducerConfig.BATCH_SIZE_CONFIG;
+    public static final String KAFKA_SINK_MAX_REQUEST_SIZE = KAFKA_SINK_PREFIX + ProducerConfig.MAX_REQUEST_SIZE_CONFIG;
+    public static final String KAFKA_SINK_TOPIC = KAFKA_SINK_PREFIX + "topic";
+
+    // Consumer Configs
+    public static final String KAFKA_SOURCE_BOOTSTRAP_SERVERS = KAFKA_SOURCE_PREFIX + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
+    public static final String KAFKA_SOURCE_GROUP_ID = KAFKA_SOURCE_PREFIX + ConsumerConfig.GROUP_ID_CONFIG;
+    public static final String KAFKA_SOURCE_FETCH_MIN_BYTES = KAFKA_SOURCE_PREFIX + ConsumerConfig.FETCH_MIN_BYTES_CONFIG;
+    public static final String KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS = KAFKA_SOURCE_PREFIX + ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
+    public static final String KAFKA_SOURCE_SESSION_TIMEOUT_MS = KAFKA_SOURCE_PREFIX + ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG;
+    public static final String KAFKA_SOURCE_AUTO_COMMIT_ENABLED = KAFKA_SOURCE_PREFIX + "auto_commit_enabled";
+    public static final String KAFKA_SOURCE_TOPIC= KAFKA_SOURCE_PREFIX + "topic";
 }
