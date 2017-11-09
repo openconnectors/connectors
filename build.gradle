@@ -152,12 +152,20 @@ project(':aerospike') {
 	}
 }
 
+//Cassandra
+project(':cassandra') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
 //Heron Adapters
 project(':heron-adapter') {
 	dependencies {
 		compile project(':core')
 		compile project(':aerospike')
 		compile project(':twitter')
+		compile project(':cassandra')
 	}
 }
 
@@ -167,15 +175,17 @@ project(':examples') {
 		compile project(':core')
 		compile project(':aerospike')
 		compile project(':twitter')
+		compile project(':cassandra')
 	}
 }
 
 //Examples
 project(':examples-heron') {
     dependencies {
-        compile project(':core')
-        compile project(':aerospike')
-        compile project(':twitter')
-        compile project(':heron-adapter')
+		compile project(':core')
+		compile project(':aerospike')
+		compile project(':twitter')
+		compile project(':cassandra')
+		compile project(':heron-adapter')
     }
 }
