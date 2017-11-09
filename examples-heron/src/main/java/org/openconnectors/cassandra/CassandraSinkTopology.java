@@ -24,9 +24,9 @@ import com.twitter.heron.streamlet.Config;
 import com.twitter.heron.streamlet.KeyValue;
 import com.twitter.heron.streamlet.Runner;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import static org.openconnectors.util.DataUtils.persons;
+import static org.openconnectors.util.DataUtils.randomFromList;
+import static org.openconnectors.util.DataUtils.sentences;
 
 /**
  * Basic topology to copy data fro stdin to std out, useful for experimentation
@@ -36,23 +36,8 @@ public final class CassandraSinkTopology {
     private CassandraSinkTopology() {
     }
 
-    public static String randomFromList(List<String> ls) {
-        return ls.get(new Random().nextInt(ls.size()));
-    }
 
     public static void main(String[] args) throws Exception {
-        List<String> persons = Arrays.asList(
-                "Mahatma Gandhi",
-                "J F Kennedy",
-                "Martin Luther King",
-                "Abraham Lincoln"
-        );
-        List<String> sentences = Arrays.asList(
-                "I have nothing to declare but my genius",
-                "You can even",
-                "Compassion is an action word with no boundaries",
-                "To thine own self be true"
-        );
 
         Builder processingGraphBuilder = Builder.createBuilder();
         processingGraphBuilder.newSource(() -> new KeyValue<>(randomFromList(persons), randomFromList(sentences)))

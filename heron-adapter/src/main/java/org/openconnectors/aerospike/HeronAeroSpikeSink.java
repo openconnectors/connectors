@@ -31,9 +31,9 @@ import java.util.Collections;
 /**
  * Simple Push based Twitter FireHose Source
  */
-public class HeronAerospikeSink<K, V> implements Sink<KeyValue<K, V>> {
+public class HeronAeroSpikeSink<K, V> implements Sink<KeyValue<K, V>> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HeronAerospikeSink.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HeronAeroSpikeSink.class);
     private AeroSpikeSink<K, V> sink;
 
     @Override
