@@ -26,6 +26,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
+import org.openconnectors.util.KeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ import static org.openconnectors.config.ConfigUtils.verifyExists;
 /**
  * Simple Kafka Sink to publish string messages to a topic
  */
-public class KafkaSink implements SinkConnector<String> {
+public class KafkaSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaSink.class);
 
@@ -48,10 +49,10 @@ public class KafkaSink implements SinkConnector<String> {
     private String topic;
 
     @Override
-    public CompletableFuture<Void> publish(Collection<String> messages) {
-        ProducerRecord<String, String> record;
-        for (String message : messages) {
-            record = new ProducerRecord<>(topic, message);
+    public CompletableFuture<Void> publish(Collection<KeyValue<K, V>> messages) {
+        ProducerRecord record;
+        for (KeyValue<K, V> tuple  : messages) {
+            record = new ProducerRecord<>(topic, tuple.getKey(), tuple.getValue());
             LOG.debug("Message sending to kafka, record={}.", record);
             producer.send(record);
         }
