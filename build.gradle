@@ -166,7 +166,7 @@ project(':heron-adapter') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-        compile project(':kafka')
+		compile project(':kafka')
 	}
 }
 
@@ -177,7 +177,7 @@ project(':examples') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-        compile project(':kafka')
+		compile project(':kafka')
 	}
 }
 
@@ -189,6 +189,6 @@ project(':examples-heron') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-        compile project(':kafka')
+		compile project(':kafka')
     }
 }
