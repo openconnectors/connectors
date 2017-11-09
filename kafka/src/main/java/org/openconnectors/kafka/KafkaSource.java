@@ -43,16 +43,16 @@ import static org.openconnectors.config.ConfigUtils.verifyExists;
 /**
  * Simple Kafka Source to emit strng messages from a topic
  */
-public class KafkaSource implements PushSourceConnector<String> {
+public class KafkaSource<V> implements PushSourceConnector<V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaSource.class);
 
-    private Consumer<String, String> consumer;
+    private Consumer<String, V> consumer;
     private Properties props;
     private String topic;
     private Boolean autoCommitEnabled;
 
-    private java.util.function.Consumer<Collection<String>> consumeFunction;
+    private java.util.function.Consumer<Collection<V>> consumeFunction;
 
     @Override
     public void open(Config config) throws Exception {
@@ -98,12 +98,12 @@ public class KafkaSource implements PushSourceConnector<String> {
             consumer = new KafkaConsumer<>(props);
             consumer.subscribe(Arrays.asList(topic));
             LOG.info("Kafka source started.");
-            ConsumerRecords<String, String> records;
-            List<String> values = new ArrayList<>();
+            ConsumerRecords<String, V> records;
+            List<V> values = new ArrayList<>();
             while(true){
                 records = consumer.poll(1000);
                 values.clear();
-                for (ConsumerRecord<String, String> record : records) {
+                for (ConsumerRecord<String, V> record : records) {
                     LOG.debug("Message received from kafka, key: {}. value: {}", record.key(), record.value());
                     values.add(record.value());
                 }
@@ -124,7 +124,7 @@ public class KafkaSource implements PushSourceConnector<String> {
     }
 
     @Override
-    public void setConsumer(java.util.function.Consumer<Collection<String>> consumeFunction) {
+    public void setConsumer(java.util.function.Consumer<Collection<V>> consumeFunction) {
         this.consumeFunction = consumeFunction;
     }
 

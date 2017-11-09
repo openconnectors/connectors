@@ -9,11 +9,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
-public class HeronKafkaSource implements Source<String> {
+public class HeronKafkaSource<V> implements Source<V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeronKafkaSource.class);
-    private PullWrapperOnPushSource<String> pullHose;
-    private Collection<String> buffer;
+    private PullWrapperOnPushSource<V> pullHose;
+    private Collection<V> buffer;
 
     @Override
     public void setup(Context context) {
@@ -31,7 +31,7 @@ public class HeronKafkaSource implements Source<String> {
     }
 
     @Override
-    public String get() {
+    public V get() {
         if (buffer == null || buffer.isEmpty()) {
             try {
                 buffer = pullHose.fetch();
@@ -40,9 +40,9 @@ public class HeronKafkaSource implements Source<String> {
             }
         }
         if (buffer != null && !buffer.isEmpty()) {
-            String retval = buffer.iterator().next();
+            V retVal = buffer.iterator().next();
             buffer.clear();
-            return retval;
+            return retVal;
         } else {
             return null;
         }
