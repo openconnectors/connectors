@@ -31,9 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
 
 import static org.openconnectors.config.ConfigUtils.verifyExists;
@@ -46,34 +48,38 @@ public class KafkaSource implements PushSourceConnector<String> {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaSource.class);
 
     private Consumer<String, String> consumer;
-    private Properties props = new Properties();
+    private Properties props;
     private String topic;
     private Boolean autoCommitEnabled;
 
-    private Object waitObject;
     private java.util.function.Consumer<Collection<String>> consumeFunction;
 
     @Override
     public void open(Config config) throws Exception {
 
-        verifyExists(config, ConfigKeys.KAFKA_SINK_TOPIC);
+        verifyExists(config, ConfigKeys.KAFKA_SOURCE_TOPIC);
         verifyExists(config, ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS);
         verifyExists(config, ConfigKeys.KAFKA_SOURCE_GROUP_ID);
         verifyExists(config, ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES);
         verifyExists(config, ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS);
         verifyExists(config, ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS);
+        verifyExists(config, ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_ENABLED);
 
-        topic = config.getString("kafka.source.topic");
-        autoCommitEnabled = config.getBoolean("kafka.source.auto_commit_enabled");
+        props = new Properties();
+
+        topic = config.getString(ConfigKeys.KAFKA_SOURCE_TOPIC);
+        autoCommitEnabled = config.getBoolean(ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_ENABLED);
 
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_BOOTSTRAP_SERVERS));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_GROUP_ID));
-        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES));
-        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS));
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS));
+        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, config.getInt(ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES).toString());
+        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, config.getLong(ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS).toString());
+        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, config.getLong(ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS).toString());
 
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+
+        this.start();
 
     }
 
@@ -93,12 +99,15 @@ public class KafkaSource implements PushSourceConnector<String> {
             consumer.subscribe(Arrays.asList(topic));
             LOG.info("Kafka source started.");
             ConsumerRecords<String, String> records;
+            List<String> values = new ArrayList<>();
             while(true){
                 records = consumer.poll(1000);
+                values.clear();
                 for (ConsumerRecord<String, String> record : records) {
                     LOG.debug("Message received from kafka, key: {}. value: {}", record.key(), record.value());
-                    consumeFunction.accept(Collections.singleton(record.value()));
+                    values.add(record.value());
                 }
+                consumeFunction.accept(values);
                 if (!autoCommitEnabled) {
                     consumer.commitSync();
                 }

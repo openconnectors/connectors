@@ -91,8 +91,8 @@ public class KafkaSink implements SinkConnector<String> {
         topic = config.getString(ConfigKeys.KAFKA_SINK_TOPIC);
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS));
         props.put(ProducerConfig.ACKS_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_ACKS));
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_BATCH_SIZE));
-        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_MAX_REQUEST_SIZE));
+        props.put(ProducerConfig.BATCH_SIZE_CONFIG, config.getLong(ConfigKeys.KAFKA_SINK_BATCH_SIZE).toString());
+        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, config.getLong(ConfigKeys.KAFKA_SINK_MAX_REQUEST_SIZE).toString());
 
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
