@@ -2,7 +2,6 @@ package org.openconnectors.pulsar;
 
 import com.twitter.heron.streamlet.Context;
 import com.twitter.heron.streamlet.Source;
-import org.apache.pulsar.client.api.Message;
 import org.openconnectors.PulsarSource;
 import org.openconnectors.config.ConfigProvider;
 import org.openconnectors.util.PullWrapperOnPushSource;

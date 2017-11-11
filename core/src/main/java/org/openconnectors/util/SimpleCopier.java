@@ -34,17 +34,17 @@ import java.util.function.Function;
 public class SimpleCopier<I, O, R> {
 
     private PullSourceConnector<I> pullSource;
-    private SinkConnector<O, R> sink;
+    private SinkConnector<O> sink;
     private Function<I, O> transformer;
 
-    public SimpleCopier(PullSourceConnector<I> source, SinkConnector<O, R> sink,
+    public SimpleCopier(PullSourceConnector<I> source, SinkConnector<O> sink,
                         Function<I, O> transformer) {
         this.pullSource = source;
         this.sink = sink;
         this.transformer = transformer;
     }
 
-    public SimpleCopier(PushSourceConnector<I> source, SinkConnector<O, R> sink,
+    public SimpleCopier(PushSourceConnector<I> source, SinkConnector<O> sink,
                         Function<I, O> transformer) {
         this.pullSource = new PullWrapperOnPushSource<>(source, 1024 * 1024, PullWrapperOnPushSource.BufferStrategy.BLOCK);
         this.sink = sink;

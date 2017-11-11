@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.openconnectors.config.ConfigUtils.verifyExists;
 
-public class PulsarSink implements SinkConnector<byte[], MessageId> {
+public class PulsarSink implements SinkConnector<byte[]> {
     private static final Logger LOG = LoggerFactory.getLogger(PulsarSink.class);
 
     PulsarClient client;
@@ -22,12 +22,12 @@ public class PulsarSink implements SinkConnector<byte[], MessageId> {
     CompletableFuture<MessageId> messageIdCompletableFuture = null;
 
     @Override
-    public CompletableFuture<MessageId> publish(Collection<byte[]> messages) {
+    public CompletableFuture<Void> publish(Collection<byte[]> messages) {
 
         for (byte[] message : messages) {
             messageIdCompletableFuture = producer.sendAsync(message);
         }
-        return messageIdCompletableFuture;
+        return messageIdCompletableFuture.thenApply(x -> null);
     }
 
     @Override

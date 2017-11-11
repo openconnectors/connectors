@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
  *
  * @param <U> Type for messages to be submitted for publishing
  */
-public interface SinkConnector<U, R> extends Connector {
+public interface SinkConnector<U> extends Connector {
 
     /**
      * Attempt to publish a type safe collection of messages
@@ -36,7 +36,7 @@ public interface SinkConnector<U, R> extends Connector {
      * @param messages Objects to process in the sink
      * @return Completable future fo async publish request
      */
-    CompletableFuture<R> publish(final Collection<U> messages);
+    CompletableFuture<Void> publish(final Collection<U> messages);
 
     /**
      * Explicit flush useful in being called before closing the sink
