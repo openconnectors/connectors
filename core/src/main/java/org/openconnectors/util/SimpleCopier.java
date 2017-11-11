@@ -31,7 +31,7 @@ import java.util.function.Function;
 /**
  * Copy Topology template targeting unit testing
  */
-public class SimpleCopier<I, O, R> {
+public class SimpleCopier<I, O> {
 
     private PullSourceConnector<I> pullSource;
     private SinkConnector<O> sink;

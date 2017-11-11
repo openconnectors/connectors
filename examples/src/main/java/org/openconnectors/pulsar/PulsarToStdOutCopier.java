@@ -5,7 +5,7 @@ import org.openconnectors.config.ConfigProvider;
 import org.openconnectors.stdconnectors.StdoutSink;
 import org.openconnectors.util.SimpleCopier;
 
-public class PulsarToStdOutCopier extends SimpleCopier<byte[], String, Void> {
+public class PulsarToStdOutCopier extends SimpleCopier<byte[], String> {
     public PulsarToStdOutCopier() {
         super(new PulsarSource(), new StdoutSink(), message -> new String(message));
     }

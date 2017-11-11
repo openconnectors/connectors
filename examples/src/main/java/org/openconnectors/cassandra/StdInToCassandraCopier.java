@@ -27,7 +27,7 @@ import org.openconnectors.util.SimpleCopier;
 /**
  * Basic topology to copy data fro stdin to aerospike, useful for experimentation
  */
-public class StdInToCassandraCopier extends SimpleCopier<String, KeyValue<String, String>, Void> {
+public class StdInToCassandraCopier extends SimpleCopier<String, KeyValue<String, String>> {
 
     public StdInToCassandraCopier() {
         super(new StdinSource(), new CassandraSink<>(), x -> new KeyValue<>(x, x));
