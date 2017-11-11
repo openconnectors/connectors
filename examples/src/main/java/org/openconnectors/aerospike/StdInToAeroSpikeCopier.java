@@ -27,7 +27,7 @@ import org.openconnectors.util.SimpleCopier;
 /**
  * Basic topology to copy data from stdin to aerospike, useful for experimentation
  */
-public class StdInToAeroSpikeCopier extends SimpleCopier<String, KeyValue<String, String>> {
+public class StdInToAeroSpikeCopier extends SimpleCopier<String, KeyValue<String, String>, Void> {
 
     public StdInToAeroSpikeCopier() {
         super(new StdinSource(), new AeroSpikeSink<>(), x -> new KeyValue<>(x, x));

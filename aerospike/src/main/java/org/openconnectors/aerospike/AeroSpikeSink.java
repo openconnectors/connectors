@@ -38,7 +38,7 @@ import static org.openconnectors.config.ConfigUtils.verifyExists;
 /**
  * Simple AeroSpike sink
  */
-public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
+public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>, Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(AeroSpikeSink.class);
 

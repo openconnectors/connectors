@@ -40,7 +40,7 @@ import static org.openconnectors.config.ConfigUtils.verifyExists;
 /**
  * Simple Kafka Sink to publish string messages to a topic
  */
-public class KafkaSink<K, V> implements SinkConnector<KeyValue<K, V>> {
+public class KafkaSink<K, V> implements SinkConnector<KeyValue<K, V>, Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaSink.class);
 

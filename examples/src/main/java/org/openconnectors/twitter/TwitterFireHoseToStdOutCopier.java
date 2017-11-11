@@ -26,7 +26,7 @@ import org.openconnectors.util.SimpleCopier;
 /**
  * Basic topology to copy data from Twitter firehouse to std out, useful for experimentation
  */
-public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String> {
+public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String, Void> {
 
     public TwitterFireHoseToStdOutCopier() {
         super(new TwitterFireHose(), new StdoutSink(), x -> x);

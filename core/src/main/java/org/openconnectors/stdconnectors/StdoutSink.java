@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * Sample Sink to print to std out
  *
  */
-public class StdoutSink implements SinkConnector<String> {
+public class StdoutSink implements SinkConnector<String, Void> {
 
     private String outputFormat;
     private AtomicLong linesReceived;

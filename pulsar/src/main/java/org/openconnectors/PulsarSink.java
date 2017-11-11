@@ -1,9 +1,8 @@
 package org.openconnectors;
 
-import org.apache.pulsar.client.api.Message;
+import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
-import org.apache.pulsar.client.api.PulsarClientException;
 import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
@@ -15,26 +14,27 @@ import java.util.concurrent.CompletableFuture;
 
 import static org.openconnectors.config.ConfigUtils.verifyExists;
 
-public class PulsarSink implements SinkConnector<byte[]> {
+public class PulsarSink implements SinkConnector<byte[], MessageId> {
     private static final Logger LOG = LoggerFactory.getLogger(PulsarSink.class);
 
     PulsarClient client;
     Producer producer;
+    CompletableFuture<MessageId> messageIdCompletableFuture = null;
 
     @Override
-    public CompletableFuture<Void> publish(Collection<byte[]> messages) {
-        try {
-            for (byte[] message : messages) {
-                producer.send(message);
-            }
-        } catch (PulsarClientException e) {
-            LOG.error("Error receiving message from pulsar producer", e);
+    public CompletableFuture<MessageId> publish(Collection<byte[]> messages) {
+
+        for (byte[] message : messages) {
+            messageIdCompletableFuture = producer.sendAsync(message);
         }
-        return CompletableFuture.completedFuture(null);
+        return messageIdCompletableFuture;
     }
 
     @Override
     public void flush() throws Exception {
+        if (messageIdCompletableFuture != null) {
+            messageIdCompletableFuture.join();
+        }
 
     }
 
@@ -67,6 +67,6 @@ public class PulsarSink implements SinkConnector<byte[]> {
 
     @Override
     public String getVersion() {
-        return null;
+        return PulsarConfigKeys.PULSAR_CONNECTOR_VERSION;
     }
 }

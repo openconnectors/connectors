@@ -39,7 +39,7 @@ import static org.openconnectors.cassandra.CassandraConfigKeys.*;
 /**
  * Simple AeroSpike sink
  */
-public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
+public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>, Void> {
 
     private static final Logger LOG = LoggerFactory.getLogger(CassandraSink.class);
 

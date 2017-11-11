@@ -15,16 +15,16 @@ import java.util.function.Consumer;
 
 import static org.openconnectors.config.ConfigUtils.verifyExists;
 
-public class PulsarSource implements PushSourceConnector<Message> {
+public class PulsarSource implements PushSourceConnector<byte[]> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PulsarSource.class);
 
-    private java.util.function.Consumer<Collection<Message>> consumeFunction;
+    private java.util.function.Consumer<Collection<byte[]>> consumeFunction;
     PulsarClient client;
     private org.apache.pulsar.client.api.Consumer consumer;
 
     @Override
-    public void setConsumer(Consumer<Collection<Message>> consumeFunction) {
+    public void setConsumer(Consumer<Collection<byte[]>> consumeFunction) {
         this.consumeFunction = consumeFunction;
     }
 
@@ -46,7 +46,6 @@ public class PulsarSource implements PushSourceConnector<Message> {
         String topic = config.getString(PulsarConfigKeys.PULSAR_SOURCE_TOPIC);
         String subscription = config.getString(PulsarConfigKeys.PULSAR_SOURCE_SUBSCRIPTION);
         consumer = client.subscribe(topic, subscription);
-
         start();
     }
 
@@ -57,11 +56,10 @@ public class PulsarSource implements PushSourceConnector<Message> {
                 while (true) {
                     // Wait for a message
                     Message msg = consumer.receive();
-
-                    consumeFunction.accept(Collections.singleton(msg));
+                    consumeFunction.accept(Collections.singleton(msg.getData()));
 
                     // Acknowledge the message so that it can be deleted by broker
-                    consumer.acknowledge(msg);
+                    consumer.acknowledgeAsync(msg);
                 }
             } catch (PulsarClientException e) {
                 LOG.error("Error receiving message from pulsar consumer", e);
@@ -83,6 +81,6 @@ public class PulsarSource implements PushSourceConnector<Message> {
 
     @Override
     public String getVersion() {
-        return null;
+        return PulsarConfigKeys.PULSAR_CONNECTOR_VERSION;
     }
 }

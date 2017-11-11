@@ -14,4 +14,6 @@ public class PulsarConfigKeys {
     public static final String PULSAR_SOURCE_BROKER_ROOT_URL = PULSAR_SOURCE_PREFIX + "broker.root.url";
     public static final String PULSAR_SOURCE_SUBSCRIPTION = PULSAR_SOURCE_PREFIX + "subscription";
 
+    public static final String PULSAR_CONNECTOR_VERSION = "0.0.1";
+
 }
