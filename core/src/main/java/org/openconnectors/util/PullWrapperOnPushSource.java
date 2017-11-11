@@ -56,8 +56,8 @@ public class PullWrapperOnPushSource<I> implements PullSourceConnector<I> {
 
     @Override
     public void open(Config config) throws Exception {
-        this.pushSource.open(config);
         this.pushSource.setConsumer(messages -> this.consume(messages));
+        this.pushSource.open(config);
     }
 
     @Override

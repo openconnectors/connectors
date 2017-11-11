@@ -178,6 +178,7 @@ project(':examples') {
 		compile project(':twitter')
 		compile project(':cassandra')
 		compile project(':kafka')
+		compile project(':pulsar')
 	}
 }
 
