@@ -42,34 +42,21 @@ import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 
+import static org.openconnectors.config.ConfigUtils.verifyExists;
+import static org.openconnectors.twitter.TwitterFireHoseConfigKeys.*;
+
 /**
  * Simple Push based Twitter FireHose Source
  */
 public class TwitterFireHose implements PushSourceConnector<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TwitterFireHose.class);
-    public static final String CONSUMER_KEY = "twitter-source.consumerKey";
-
-    public static final String CONSUMER_SECRET = "twitter-source.consumerSecret";
-
-    public static final String TOKEN = "twitter-source.token";
-
-    public static final String TOKEN_SECRET = "twitter-source.tokenSecret";
-
-    // ------ Optional property keys
-
-    public static final String CLIENT_NAME = "twitter-source.name";
-
-    public static final String CLIENT_HOSTS = "twitter-source.hosts";
-
-    public static final String CLIENT_BUFFER_SIZE = "twitter-source.bufferSize";
 
     // ----- Fields set by the constructor
 
     // ----- Runtime fields
     private Object waitObject;
     private Consumer<Collection<String>> consumeFunction;
-
 
     @Override
     public void initialize(ConnectorContext ctx) {
@@ -98,7 +85,7 @@ public class TwitterFireHose implements PushSourceConnector<String> {
 
     @Override
     public String getVersion() {
-        return "0.0.1";
+        return TWITTER_CONNECTOR_VERION;
     }
 
     // ------ Custom endpoints
@@ -140,7 +127,8 @@ public class TwitterFireHose implements PushSourceConnector<String> {
 
                     @Override
                     public void setup(InputStream input) {
-                        reader = new DelimitedStreamReader(input, Constants.DEFAULT_CHARSET, Integer.parseInt(config.getString(CLIENT_BUFFER_SIZE, "50000")));
+                        reader = new DelimitedStreamReader(input, Constants.DEFAULT_CHARSET,
+                            Integer.parseInt(config.getString(CLIENT_BUFFER_SIZE, "50000")));
                     }
 
                     @Override
@@ -156,26 +144,23 @@ public class TwitterFireHose implements PushSourceConnector<String> {
                 })
                 .build();
 
-        Thread runnerThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                LOG.info("Started the Twitter FireHose Runner Thread");
-                client.connect();
-                LOG.info("Twitter Streaming API connection established successfully");
+        Thread runnerThread = new Thread(() -> {
+            LOG.info("Started the Twitter FireHose Runner Thread");
+            client.connect();
+            LOG.info("Twitter Streaming API connection established successfully");
 
-                // just wait now
-                try {
-                    synchronized (waitObject) {
-                        waitObject.wait();
-                    }
-                } catch (Exception e) {
-                    LOG.info("Got a exception in waitObject");
+            // just wait now
+            try {
+                synchronized (waitObject) {
+                    waitObject.wait();
                 }
-                LOG.debug("Closing Twitter Streaming API connection");
-                client.stop();
-                LOG.info("Twitter Streaming API connection closed");
-                LOG.info("Twitter FireHose Runner Thread ending");
+            } catch (Exception e) {
+                LOG.info("Got a exception in waitObject");
             }
+            LOG.debug("Closing Twitter Streaming API connection");
+            client.stop();
+            LOG.info("Twitter Streaming API connection closed");
+            LOG.info("Twitter FireHose Runner Thread ending");
         });
         runnerThread.setName("TwitterFireHoseRunner");
         runnerThread.start();
@@ -188,9 +173,4 @@ public class TwitterFireHose implements PushSourceConnector<String> {
         }
     }
 
-    private void verifyExists(Config config, String key) {
-        if (config.getString(key) == null) {
-            throw new IllegalArgumentException("Required property '" + key + "' not set.");
-        }
-    }
 }

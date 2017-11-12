@@ -17,23 +17,24 @@
  * under the License.
  */
 
-package org.openconnectors.twitter;
+package org.openconnectors.cassandra;
 
 import org.openconnectors.config.ConfigProvider;
-import org.openconnectors.stdconnectors.StdoutSink;
+import org.openconnectors.stdconnectors.StdinSource;
+import org.openconnectors.util.KeyValue;
 import org.openconnectors.util.SimpleCopier;
 
 /**
- * Basic topology to copy data from Twitter firehouse to std out, useful for experimentation
+ * Basic topology to copy data fro stdin to aerospike, useful for experimentation
  */
-public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String> {
+public class StdInToCassandraCopier extends SimpleCopier<String, KeyValue<String, String>> {
 
-    public TwitterFireHoseToStdOutCopier() {
-        super(new TwitterFireHose(), new StdoutSink(), x -> x);
+    public StdInToCassandraCopier() {
+        super(new StdinSource(), new CassandraSink<>(), x -> new KeyValue<>(x, x));
     }
 
     public static void main(String[] args) throws Exception {
-        TwitterFireHoseToStdOutCopier instance = new TwitterFireHoseToStdOutCopier();
+        StdInToCassandraCopier instance = new StdInToCassandraCopier();
         instance.setup(new ConfigProvider());
         instance.run();
     }

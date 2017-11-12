@@ -32,15 +32,15 @@ public interface Connector extends AutoCloseable, Versionable, Serializable {
     /**
      * First method to call in the lifecycle of the object
      *
-     * @param ctx
+     * @param ctx Connector context for distributed runtimes
      */
     public void initialize(final ConnectorContext ctx);
 
     /**
      * Open connector with configuration
      *
-     * @param config
-     * @throws Exception
+     * @param config initialization config
+     * @throws Exception IO type exceptions when opening a connector
      */
     public abstract void open(final Config config) throws Exception;
 }

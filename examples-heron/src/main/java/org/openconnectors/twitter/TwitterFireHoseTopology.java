@@ -19,22 +19,23 @@
 
 package org.openconnectors.twitter;
 
-import org.openconnectors.config.ConfigProvider;
-import org.openconnectors.stdconnectors.StdoutSink;
-import org.openconnectors.util.SimpleCopier;
+import com.twitter.heron.streamlet.Builder;
+import com.twitter.heron.streamlet.Config;
+import com.twitter.heron.streamlet.Runner;
 
 /**
- * Basic topology to copy data from Twitter firehouse to std out, useful for experimentation
+ * Basic topology to copy data fro stdin to std out, useful for experimentation
  */
-public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String> {
+public final class TwitterFireHoseTopology {
 
-    public TwitterFireHoseToStdOutCopier() {
-        super(new TwitterFireHose(), new StdoutSink(), x -> x);
+    private TwitterFireHoseTopology() {
     }
 
     public static void main(String[] args) throws Exception {
-        TwitterFireHoseToStdOutCopier instance = new TwitterFireHoseToStdOutCopier();
-        instance.setup(new ConfigProvider());
-        instance.run();
+        Builder processingGraphBuilder = Builder.createBuilder();
+        processingGraphBuilder.newSource(new TwitterFireHoseStreamlet()).log();
+        Config config = new Config();
+        config.setNumContainers(1);
+        new Runner().run("TwitterFireHose", config, processingGraphBuilder);
     }
 }

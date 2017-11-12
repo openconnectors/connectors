@@ -17,24 +17,13 @@
  * under the License.
  */
 
-package org.openconnectors.twitter;
+package org.openconnectors.kafka;
 
-import org.openconnectors.config.ConfigProvider;
-import org.openconnectors.stdconnectors.StdoutSink;
-import org.openconnectors.util.SimpleCopier;
+public class KafkaConnectorVersion {
 
-/**
- * Basic topology to copy data from Twitter firehouse to std out, useful for experimentation
- */
-public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String> {
+    private static final String VERSION = "kafka.io.connector-0.0.1";
 
-    public TwitterFireHoseToStdOutCopier() {
-        super(new TwitterFireHose(), new StdoutSink(), x -> x);
-    }
-
-    public static void main(String[] args) throws Exception {
-        TwitterFireHoseToStdOutCopier instance = new TwitterFireHoseToStdOutCopier();
-        instance.setup(new ConfigProvider());
-        instance.run();
+    public static String getVersion(){
+        return VERSION;
     }
 }

@@ -25,7 +25,7 @@ import org.openconnectors.stdconnectors.StdoutSink;
 import org.openconnectors.util.SimpleCopier;
 
 /**
- * Basic topology to copy data fro stdin to std out, useful for experimentation
+ * Basic topology to copy data from stdin to std out, useful for experimentation
  */
 public class StdInToStdOutCopier extends SimpleCopier<String, String> {
 

@@ -1,3 +1,7 @@
+plugins {
+	id "com.github.johnrengelman.shadow" version "2.0.1"
+}
+
 allprojects {
 
 }
@@ -20,7 +24,7 @@ subprojects {
 	targetCompatibility = 1.8
 
     group   = 'org.openconnectors.connectors'
-    version = '0.0.' + getVersionTag()
+    version = System.env['CONNECTOR_VERION'] ?: '0.0.' + getVersionTag()
 
 	repositories {
 		jcenter()
@@ -60,10 +64,12 @@ subprojects {
 	    archives javadocJar
 	}
 
-	task fatJar(type: Jar) {
-		baseName = project.name + '-uber'
-		from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
-		with jar
+	apply plugin: 'com.github.johnrengelman.shadow'
+
+ 	shadowJar {
+    	mergeServiceFiles {
+      		include 'reference.conf'
+    	}
 	}
 
 	task createPom {
@@ -146,11 +152,43 @@ project(':aerospike') {
 	}
 }
 
-//Examples
+//Cassandra
+project(':cassandra') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+//Heron Adapters
+project(':heron-adapter') {
+	dependencies {
+		compile project(':core')
+		compile project(':aerospike')
+		compile project(':twitter')
+		compile project(':cassandra')
+		compile project(':kafka')
+	}
+}
+
+//Examples local jvm
 project(':examples') {
 	dependencies {
 		compile project(':core')
 		compile project(':aerospike')
 		compile project(':twitter')
+		compile project(':cassandra')
+		compile project(':kafka')
 	}
+}
+
+//Examples heron toplogies
+project(':examples-heron') {
+    dependencies {
+		compile project(':core')
+		compile project(':heron-adapter')
+		compile project(':aerospike')
+		compile project(':twitter')
+		compile project(':cassandra')
+		compile project(':kafka')
+    }
 }

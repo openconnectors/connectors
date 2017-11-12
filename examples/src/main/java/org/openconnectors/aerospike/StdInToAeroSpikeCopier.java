@@ -25,16 +25,16 @@ import org.openconnectors.util.KeyValue;
 import org.openconnectors.util.SimpleCopier;
 
 /**
- * Basic topology to copy data fro stdin to aerospike, useful for experimentation
+ * Basic topology to copy data from stdin to aerospike, useful for experimentation
  */
-public class StdInToAerospikeTopology extends SimpleCopier<String, KeyValue<String, String>> {
+public class StdInToAeroSpikeCopier extends SimpleCopier<String, KeyValue<String, String>> {
 
-    public StdInToAerospikeTopology() {
-        super(new StdinSource(), new AerospikeSink<>(), x -> new KeyValue<>(x, x));
+    public StdInToAeroSpikeCopier() {
+        super(new StdinSource(), new AeroSpikeSink<>(), x -> new KeyValue<>(x, x));
     }
 
     public static void main(String[] args) throws Exception {
-        StdInToAerospikeTopology instance = new StdInToAerospikeTopology();
+        StdInToAeroSpikeCopier instance = new StdInToAeroSpikeCopier();
         instance.setup(new ConfigProvider());
         instance.run();
     }
