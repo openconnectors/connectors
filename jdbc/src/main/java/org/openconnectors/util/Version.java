@@ -17,10 +17,12 @@
  * under the License.
  */
 
-package org.openconnectors.exceptions;
+package org.openconnectors.util;
 
-public class DbConnectionConfigException extends RuntimeException {
-    public DbConnectionConfigException(String message) {
-        super(message);
+public class Version {
+    private static final String VERSION = "jdbc.io.connector-0.0.1";
+
+    public static String getVersion() {
+        return VERSION;
     }
 }
