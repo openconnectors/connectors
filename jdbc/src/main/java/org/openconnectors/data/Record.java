@@ -17,10 +17,24 @@
  * under the License.
  */
 
-package org.openconnectors.exceptions;
+package org.openconnectors.data;
 
-public class DbConnectionConfigException extends RuntimeException {
-    public DbConnectionConfigException(String message) {
-        super(message);
+import java.io.Serializable;
+
+public class Record implements Serializable{
+    private Object[] values;
+    private TableMetaData tableMetaData;
+
+    public Record(Object[] values, TableMetaData tableMetaData) {
+        this.values = values;
+        this.tableMetaData = tableMetaData;
+    }
+
+    public Object[] getValues() {
+        return values;
+    }
+
+    public TableMetaData getTableMetaData() {
+        return tableMetaData;
     }
 }

@@ -17,10 +17,24 @@
  * under the License.
  */
 
-package org.openconnectors.exceptions;
+package org.openconnectors.source;
 
-public class DbConnectionConfigException extends RuntimeException {
-    public DbConnectionConfigException(String message) {
-        super(message);
+import org.openconnectors.util.ConnectionProvider;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class BulkJdbcQuerier extends TableQuerier {
+
+    public BulkJdbcQuerier(ConnectionProvider connectionProvider, String schemaPattern, String tableName) {
+        super(connectionProvider, schemaPattern, tableName);
+    }
+
+    @Override
+    protected PreparedStatement createPreparedStatement() throws SQLException {
+        String quoteString = getConnection().getMetaData().getIdentifierQuoteString();
+        quoteString = quoteString == null ? "" : quoteString;
+        String sqlString = "SELECT * FROM " + quoteString + tableName + quoteString;
+        return getConnection().prepareStatement(sqlString);
     }
 }
