@@ -58,7 +58,7 @@ public class HeronAeroSpikeSink<K, V> implements Sink<KeyValue<K, V>> {
         try {
             sink.close();
         } catch (Exception e) {
-            LOG.error("Exception thrown while closing Aerospike Sink");
+            LOG.error("Exception thrown while closing Aerospike Sink", e);
         }
     }
 }
