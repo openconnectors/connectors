@@ -34,7 +34,7 @@ public interface Connector extends AutoCloseable, Versionable, Serializable {
      *
      * @param ctx Connector context for distributed runtimes
      */
-    public void initialize(final ConnectorContext ctx);
+    void initialize(final ConnectorContext ctx);
 
     /**
      * Open connector with configuration
@@ -42,5 +42,5 @@ public interface Connector extends AutoCloseable, Versionable, Serializable {
      * @param config initialization config
      * @throws Exception IO type exceptions when opening a connector
      */
-    public abstract void open(final Config config) throws Exception;
+    void open(final Config config) throws Exception;
 }
