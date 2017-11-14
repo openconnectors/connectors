@@ -1,4 +1,4 @@
-package org.openconnectors.kafka;
+package org.openconnectors.elasticsearch;
 
 import org.openconnectors.config.ConfigProvider;
 import org.openconnectors.stdconnectors.StdoutSink;
