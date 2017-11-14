@@ -37,7 +37,6 @@ public abstract class TableQuerier {
     protected TableMetaData tableMetaData;
     protected String schemaPattern;
     protected PreparedStatement preparedStatement;
-    private Connection connection;
     private ConnectionProvider connectionProvider;
 
     public TableQuerier(ConnectionProvider connectionProvider, String schemaPattern, String tableName) {
@@ -46,6 +45,7 @@ public abstract class TableQuerier {
         }
         this.tableName = tableName;
         this.schemaPattern = schemaPattern;
+        this.connectionProvider = connectionProvider;
     }
 
     public List<Record> query() throws SQLException {
@@ -66,6 +66,7 @@ public abstract class TableQuerier {
     public PreparedStatement getPreparedStatement() throws SQLException {
         if (preparedStatement == null) {
             preparedStatement = createPreparedStatement();
+            createTableMetaData();
 
         }
         return preparedStatement;
