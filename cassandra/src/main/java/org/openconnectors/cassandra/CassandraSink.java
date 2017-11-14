@@ -37,7 +37,7 @@ import static org.openconnectors.cassandra.CassandraConfigKeys.*;
 
 
 /**
- * Simple AeroSpike sink
+ * Simple Cassandra sink
  */
 public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 

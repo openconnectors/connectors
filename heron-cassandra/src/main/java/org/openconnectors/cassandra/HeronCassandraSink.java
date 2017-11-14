@@ -22,7 +22,6 @@ package org.openconnectors.cassandra;
 import com.twitter.heron.streamlet.Context;
 import com.twitter.heron.streamlet.KeyValue;
 import com.twitter.heron.streamlet.Sink;
-import org.openconnectors.aerospike.AeroSpikeSink;
 import org.openconnectors.config.ConfigProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collections;
 
 /**
- * Simple Push based Twitter FireHose Source
+ * Simple Heron Cassandra Sink
  */
 public class HeronCassandraSink<K, V> implements Sink<KeyValue<K, V>> {
 
