@@ -67,9 +67,7 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
 
     @Override
     public void open(Config config) throws Exception {
-        // 1. setup db config
         configureConnector(config);
-        // 2. acquire CachedConnectionProvider
         final String dbUrl = config.getString(JdbcConfigKeys.CONNECTION_URL_CONFIG);
         final String dbUser = config.getString(JdbcConfigKeys.CONNECTION_USER_CONFIG);
         final String dbPassword = config.getString(JdbcConfigKeys.CONNECTION_PASSWORD_CONFIG);
@@ -85,29 +83,24 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                 .build();
         ConnectionProvider connectionProvider = getConnectionProvider(connectionConfig);
 
-        // 3. get valid db connection
         Connection connection = connectionProvider.getValidConnection();
 
-        // 4. check white tables list from config (?)
         Set<String> whiteListTables = getWhiteListTables();
-        // 5. check black tables list from config
         Set<String> blackListTables = getBlackListTables();
         if (!whiteListTables.isEmpty() && !blackListTables.isEmpty()) {
             String errorMsg = "Only white list or black list of tables must be specified, rather than both of them.";
             logger.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
-        // 6. get all tables from db meta data
-        // TODO: handle with types
         List<String> tables = new ArrayList<>();
         String schemaPattern = this.config.getString(JdbcConfigKeys.SCHEMA_PATTERN);
+        // TODO: handle types[] parameter
         ResultSet tablesResultSet = connection.getMetaData().getTables(null, schemaPattern, "%", null);
         while (tablesResultSet.next()) {
             String tableName = tablesResultSet.getString(3).toLowerCase();
             tables.add(tableName);
         }
 
-        // 7. filter tables
         List<String> filteredTables = new ArrayList<>();
         if (!whiteListTables.isEmpty()) {
             filteredTables.addAll(tables.stream()
@@ -123,7 +116,6 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
             );
         }
         String mode = this.config.getString(JdbcConfigKeys.MODE);
-        // 8. Run separate TableQuerier for each table.
         List<TableQuerier> tableQueriers = new ArrayList<>();
         for (String tableName : filteredTables) {
             switch (mode) {
@@ -140,7 +132,6 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                     break;
             }
         }
-        // 9. In the separate thread run each poll each querier and push data to the single collector in the thread safe manner.
         for(TableQuerier tableQuerier : tableQueriers) {
             QuerierThread querierThread = new QuerierThread(tableQuerier,
                                                             config.getLong(JdbcConfigKeys.TABLE_CHECK_PERIOD),
