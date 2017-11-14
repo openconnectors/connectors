@@ -19,7 +19,7 @@
 
 package org.openconnectors.kafka;
 
-public class KafkaConnectorVersion {
+public class KafkaConnectorVersion010 {
 
     private static final String VERSION = "kafka.io.connector-0.0.1";
 

@@ -9,16 +9,16 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
-public class HeronKafkaSource<V> implements Source<V> {
+public class HeronKafka010Source<V> implements Source<V> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HeronKafkaSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HeronKafka010Source.class);
     private PullWrapperOnPushSource<V> pullHose;
     private Collection<V> buffer;
 
     @Override
     public void setup(Context context) {
         if (pullHose == null) {
-            KafkaSource kafkaSource = new KafkaSource();
+            KafkaSource010<V> kafkaSource = new KafkaSource010<>();
             pullHose = new PullWrapperOnPushSource<> (kafkaSource, 1024 * 1024,
                 PullWrapperOnPushSource.BufferStrategy.BLOCK);
         }
@@ -27,7 +27,6 @@ public class HeronKafkaSource<V> implements Source<V> {
         } catch (Exception e) {
             throw new RuntimeException("Exception during setup of Kafka Source", e);
         }
-
     }
 
     @Override

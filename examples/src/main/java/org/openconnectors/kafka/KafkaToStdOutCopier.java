@@ -10,7 +10,7 @@ import org.openconnectors.util.SimpleCopier;
 public class KafkaToStdOutCopier extends SimpleCopier<String, String> {
 
     public KafkaToStdOutCopier() {
-        super(new KafkaSource<>(), new StdoutSink(), x -> x);
+        super(new KafkaSource010<>(), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {

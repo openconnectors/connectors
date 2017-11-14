@@ -9,15 +9,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 
-public class HeronKafkaSink<K, V> implements Sink<KeyValue<K, V>> {
+public class HeronKafka010Sink<K, V> implements Sink<KeyValue<K, V>> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(HeronKafkaSink.class);
-    private KafkaSink<K, V> sink;
+    private static final Logger LOG = LoggerFactory.getLogger(HeronKafka010Sink.class);
+    private KafkaSink010<K, V> sink;
 
     @Override
     public void setup(Context ctx) {
         if (sink == null) {
-            sink = new KafkaSink<>();
+            sink = new KafkaSink010<>();
         }
         try {
             sink.open(new ConfigProvider());

@@ -40,18 +40,18 @@ import static org.openconnectors.config.ConfigUtils.verifyExists;
 /**
  * Simple Kafka Sink to publish string messages to a topic
  */
-public class KafkaSink<K, V> implements SinkConnector<KeyValue<K, V>> {
+public class KafkaSink010<K, V> implements SinkConnector<KeyValue<K, V>> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSink.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaSink010.class);
 
-    private Producer<String, String> producer;
+    private Producer<K, V> producer;
     private Properties props = new Properties();
     private String topic;
 
     @Override
     public CompletableFuture<Void> publish(Collection<KeyValue<K, V>> messages) {
-        ProducerRecord record;
-        for (KeyValue<K, V> tuple  : messages) {
+        ProducerRecord<K, V> record;
+        for (KeyValue<K, V> tuple : messages) {
             record = new ProducerRecord<>(topic, tuple.getKey(), tuple.getValue());
             LOG.debug("Message sending to kafka, record={}.", record);
             producer.send(record);
@@ -72,7 +72,7 @@ public class KafkaSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public String getVersion() {
-        return KafkaConnectorVersion.getVersion();
+        return KafkaConnectorVersion010.getVersion();
     }
 
     @Override

@@ -34,7 +34,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
@@ -43,9 +42,9 @@ import static org.openconnectors.config.ConfigUtils.verifyExists;
 /**
  * Simple Kafka Source to emit strng messages from a topic
  */
-public class KafkaSource<V> implements PushSourceConnector<V> {
+public class KafkaSource010<V> implements PushSourceConnector<V> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaSource010.class);
 
     private Consumer<String, V> consumer;
     private Properties props;
@@ -120,7 +119,7 @@ public class KafkaSource<V> implements PushSourceConnector<V> {
 
     @Override
     public String getVersion() {
-        return KafkaConnectorVersion.getVersion();
+        return KafkaConnectorVersion010.getVersion();
     }
 
     @Override

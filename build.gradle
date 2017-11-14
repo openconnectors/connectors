@@ -125,7 +125,7 @@ project(':pulsar') {
 }
 
 //Kafka
-project(':kafka') {
+project(':kafka010') {
 	dependencies {
 		compile project(':core')
 	}
@@ -166,7 +166,7 @@ project(':heron-adapter') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-		compile project(':kafka')
+		compile project(':kafka010')
 		compile project(':pulsar')
 	}
 }
@@ -178,7 +178,7 @@ project(':examples') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-		compile project(':kafka')
+		compile project(':kafka010')
 		compile project(':pulsar')
 	}
 }
@@ -191,6 +191,6 @@ project(':examples-heron') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-		compile project(':kafka')
+		compile project(':kafka010')
     }
 }
