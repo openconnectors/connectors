@@ -38,6 +38,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -54,6 +55,7 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
     private Consumer<Collection<Record>> consumeFunction;
 
     private void configureConnector(Config config) {
+        // TODO: validate config
         this.config = config;
     }
 
@@ -173,10 +175,18 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
     }
 
     private Set<String> getTables(String listName) {
-        Set<String> tables = Stream
-                .of(config.getString(listName).split(","))
-                .map(t -> t.trim().toLowerCase())
-                .collect(Collectors.toSet());
+        Set<String> tables = new HashSet<>();
+        if (listName == null || listName.isEmpty()) {
+            return tables;
+        }
+        listName = config.getString(listName);
+        if (listName == null || listName.isEmpty()) {
+            return tables;
+        }
+        tables = Stream
+            .of(listName.split(","))
+            .map(t -> t.trim().toLowerCase())
+            .collect(Collectors.toSet());
         if (tables == null) {
             return Sets.newHashSet();
         }

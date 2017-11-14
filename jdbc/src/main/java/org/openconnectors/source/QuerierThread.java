@@ -20,6 +20,8 @@
 package org.openconnectors.source;
 
 import org.openconnectors.data.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -27,10 +29,11 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-public class QuerierThread extends Thread{
+public class QuerierThread extends Thread {
+    private static final Logger logger = LoggerFactory.getLogger(QuerierThread.class);
     private TableQuerier tableQuerier;
     private long queryPeriod;
-    private AtomicBoolean isActive;
+    private AtomicBoolean isActive = new AtomicBoolean(false);
     private Consumer<Collection<Record>> consumeFunction;
 
     public QuerierThread(TableQuerier tableQuerier, long queryPeriod, Consumer<Collection<Record>> consumeFunction) {
@@ -47,12 +50,14 @@ public class QuerierThread extends Thread{
                 List<Record> records = tableQuerier.query();
                 consumeFunction.accept(records);
             } catch (SQLException e) {
-                e.printStackTrace();
+                // TODO: add log message
+                logger.error("", e);
             }
             try {
                 Thread.sleep(queryPeriod);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                // TODO: add log message
+                logger.error("", e);
             }
         }
     }
