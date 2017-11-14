@@ -14,7 +14,6 @@ public class HeronPulsarSource implements Source<byte[]> {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeronPulsarSource.class);
     private PullWrapperOnPushSource<byte[]> pullHose;
-    private Collection<byte[]> buffer;
 
     @Override
     public void setup(Context context) {
@@ -32,21 +31,13 @@ public class HeronPulsarSource implements Source<byte[]> {
     }
 
     @Override
-    public byte[] get() {
-        if (buffer == null || buffer.isEmpty()) {
-            try {
-                buffer = pullHose.fetch();
-            } catch (Exception e) {
-                LOG.error("Exception thrown while fetching from Kafka Source");
-            }
+    public Collection<byte[]> get() {
+        try {
+            return pullHose.fetch();
+        } catch (Exception e) {
+            LOG.error("Exception thrown while fetching from Kafka Source");
         }
-        if (buffer != null && !buffer.isEmpty()) {
-            byte[] retVal = buffer.iterator().next();
-            buffer.clear();
-            return retVal;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
