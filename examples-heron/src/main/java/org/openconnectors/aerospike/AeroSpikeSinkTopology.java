@@ -41,8 +41,7 @@ public final class AeroSpikeSinkTopology {
         Builder processingGraphBuilder = Builder.createBuilder();
         processingGraphBuilder.newSource(() -> new KeyValue<>(randomFromList(persons), randomFromList(sentences)))
                 .toSink(new HeronAeroSpikeSink<>());
-        Config config = new Config();
-        config.setNumContainers(1);
+        Config config = Config.defaultConfig();
         new Runner().run("AeroSpikeSinkTopology", config, processingGraphBuilder);
     }
 }

@@ -13,7 +13,6 @@ public class HeronKafka010Source<V> implements Source<V> {
 
     private static final Logger LOG = LoggerFactory.getLogger(HeronKafka010Source.class);
     private PullWrapperOnPushSource<V> pullHose;
-    private Collection<V> buffer;
 
     @Override
     public void setup(Context context) {
@@ -30,21 +29,13 @@ public class HeronKafka010Source<V> implements Source<V> {
     }
 
     @Override
-    public V get() {
-        if (buffer == null || buffer.isEmpty()) {
-            try {
-                buffer = pullHose.fetch();
-            } catch (Exception e) {
-                LOG.error("Exception thrown while fetching from Kafka Source");
-            }
+    public Collection<V> get() {
+        try {
+            return pullHose.fetch();
+        } catch (Exception e) {
+            LOG.error("Exception thrown while fetching from Kafka Source");
         }
-        if (buffer != null && !buffer.isEmpty()) {
-            V retVal = buffer.iterator().next();
-            buffer.clear();
-            return retVal;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override

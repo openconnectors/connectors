@@ -29,8 +29,7 @@ public class PulsarSourceTopology {
 
             }
         });
-        Config config = new Config();
-        config.setNumContainers(1);
+        Config config = Config.defaultConfig();
         new Runner().run("PulsarSourceTopology", config, processingGraphBuilder);
     }
 

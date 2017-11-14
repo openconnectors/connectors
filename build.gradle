@@ -6,7 +6,7 @@ allprojects {
 
 }
 
-ext.heronVersion = "0.16.5"
+ext.heronVersion = "0.17.0"
 
 subprojects {
 

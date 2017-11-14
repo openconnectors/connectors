@@ -34,8 +34,7 @@ public final class TwitterFireHoseTopology {
     public static void main(String[] args) throws Exception {
         Builder processingGraphBuilder = Builder.createBuilder();
         processingGraphBuilder.newSource(new TwitterFireHoseStreamlet()).log();
-        Config config = new Config();
-        config.setNumContainers(1);
+        Config config = Config.defaultConfig();
         new Runner().run("TwitterFireHose", config, processingGraphBuilder);
     }
 }

@@ -18,8 +18,7 @@ public class KafkaSinkTopology {
         Builder processingGraphBuilder = Builder.createBuilder();
         processingGraphBuilder.newSource(() -> new KeyValue<>(randomFromList(persons), randomFromList(sentences)))
             .toSink(new HeronKafka010Sink<>());
-        Config config = new Config();
-        config.setNumContainers(1);
+        Config config = Config.defaultConfig();
         new Runner().run("KafkaSinkTopology", config, processingGraphBuilder);
 
     }

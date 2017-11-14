@@ -35,7 +35,6 @@ public class TwitterFireHoseStreamlet implements Source<String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(TwitterFireHoseStreamlet.class);
     PullWrapperOnPushSource<String> pullHose;
-    Collection<String> buffer;
 
     @Override
     public void setup(Context ctx) {
@@ -52,21 +51,13 @@ public class TwitterFireHoseStreamlet implements Source<String> {
     }
 
     @Override
-    public String get() {
-        if (buffer == null || buffer.isEmpty()) {
-            try {
-                buffer = pullHose.fetch();
-            } catch (Exception e) {
-                LOG.error("Exception thrown while fetching from Twitter Source");
-            }
+    public Collection<String> get() {
+        try {
+            return pullHose.fetch();
+        } catch (Exception e) {
+            LOG.error("Exception thrown while fetching from Twitter Source");
         }
-        if (buffer != null && !buffer.isEmpty()) {
-            String retval = buffer.iterator().next();
-            buffer.clear();
-            return retval;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
