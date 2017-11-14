@@ -1,2 +1,3 @@
 include ":core", ":heron-adapter", ":pulsar", ":kafka010", ":jdbc",
-        ":twitter", ":aerospike", ":cassandra", ":examples", ":examples-heron"
+        ":twitter", ":aerospike", ":cassandra", ":elasticsearch5",
+        ":examples", ":examples-heron"
