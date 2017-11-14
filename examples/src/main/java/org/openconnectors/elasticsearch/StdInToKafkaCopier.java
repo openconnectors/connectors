@@ -1,6 +1,7 @@
 package org.openconnectors.elasticsearch;
 
 import org.openconnectors.config.ConfigProvider;
+import org.openconnectors.kafka.KafkaSink010;
 import org.openconnectors.stdconnectors.StdinSource;
 import org.openconnectors.util.KeyValue;
 import org.openconnectors.util.SimpleCopier;

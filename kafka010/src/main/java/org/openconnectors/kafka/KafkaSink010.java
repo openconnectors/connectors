@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.openconnectors.elasticsearch;
+package org.openconnectors.kafka;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;

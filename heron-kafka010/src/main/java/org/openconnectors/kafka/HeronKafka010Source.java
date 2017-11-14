@@ -1,4 +1,4 @@
-package org.openconnectors.elasticsearch;
+package org.openconnectors.kafka;
 
 import com.twitter.heron.streamlet.Context;
 import com.twitter.heron.streamlet.Source;

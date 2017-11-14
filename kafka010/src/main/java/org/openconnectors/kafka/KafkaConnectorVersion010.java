@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.openconnectors.elasticsearch;
+package org.openconnectors.kafka;
 
 public class KafkaConnectorVersion010 {
 
