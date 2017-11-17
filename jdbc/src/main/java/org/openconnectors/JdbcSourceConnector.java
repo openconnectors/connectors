@@ -88,7 +88,7 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
         Set<String> whiteListTables = getWhiteListTables();
         Set<String> blackListTables = getBlackListTables();
         if (!whiteListTables.isEmpty() && !blackListTables.isEmpty()) {
-            String errorMsg = "Only white list or black list of tables must be specified, rather than both of them.";
+            String errorMsg = "Specify either \"white.list.tables\" or \"black.list.tables\", but not both";
             logger.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
@@ -96,8 +96,9 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
         String schemaPattern = this.config.getString(JdbcConfigKeys.SCHEMA_PATTERN);
         // TODO: handle types[] parameter
         ResultSet tablesResultSet = connection.getMetaData().getTables(null, schemaPattern, "%", null);
+        final int tableNameColumnIndex = 3;
         while (tablesResultSet.next()) {
-            String tableName = tablesResultSet.getString(3).toLowerCase();
+            String tableName = tablesResultSet.getString(tableNameColumnIndex).toLowerCase();
             tables.add(tableName);
         }
 
@@ -124,12 +125,8 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                             new BulkJdbcQuerier(getConnectionProvider(connectionConfig), schemaPattern, tableName)
                     );
                     break;
-                case JdbcConfigKeys.AUTOINCREMENTING_MODE:
-                    //TODO: implement
-                    break;
                 default:
-                    // TODO: handle unknown mode
-                    break;
+                    throw new UnsupportedOperationException("Currently, only BULK mode is supported");
             }
         }
         for(TableQuerier tableQuerier : tableQueriers) {

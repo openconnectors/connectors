@@ -32,8 +32,11 @@ public class BulkJdbcQuerier extends TableQuerier {
 
     @Override
     protected PreparedStatement createPreparedStatement() throws SQLException {
+        String defaultQuote = "";
         String quoteString = getConnection().getMetaData().getIdentifierQuoteString();
-        quoteString = quoteString == null ? "" : quoteString;
+        if (quoteString == null) {
+            quoteString = defaultQuote;
+        }
         String sqlString = "SELECT * FROM " + quoteString + tableName + quoteString;
         return getConnection().prepareStatement(sqlString);
     }
