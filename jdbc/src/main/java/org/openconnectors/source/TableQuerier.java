@@ -39,7 +39,7 @@ public abstract class TableQuerier {
     protected PreparedStatement preparedStatement;
     private ConnectionProvider connectionProvider;
 
-    public TableQuerier(ConnectionProvider connectionProvider, String schemaPattern, String tableName) {
+    protected TableQuerier(ConnectionProvider connectionProvider, String schemaPattern, String tableName) {
         if (tableName == null || tableName.isEmpty()) {
             throw new IllegalArgumentException("TableName cannot be null or empty.");
         }
