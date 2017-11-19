@@ -36,24 +36,40 @@ public class JdbcConfigKeys {
     public static final String CONNECTION_PASSWORD_CONFIG = "connection.password";
 
     /**
+<<<<<<< 0d20418725e13b0b1b39eacadca9264b72ad2858
      * Maximum number of retries to connect to the database.
+=======
+     * Maximum number of retry to connect to the database.
+>>>>>>> Added description of the config keys.
      */
      public static final String CONNECTION_MAX_ATTEMPT = "connection.max.attempt";
 
      /**
+<<<<<<< 0d20418725e13b0b1b39eacadca9264b72ad2858
      * Delay in seconds between retries to connect to the database.
+=======
+     * Delay between retries to connect to the database.
+>>>>>>> Added description of the config keys.
      */
     public static final String CONNECTION_RETRY_DELAY = "connection.retry.delay";
 
     /**
+<<<<<<< 0d20418725e13b0b1b39eacadca9264b72ad2858
      * Schema name pattern; must match the schema name as it is stored in the database;
      *  - "" retrieves those without a schema;
      *  - null(not set) means that the schema name should not be used to narrow the search
+=======
+     * Schema pattern.
+>>>>>>> Added description of the config keys.
      */
     public static final String SCHEMA_PATTERN = "schema.pattern";
 
     /**
+<<<<<<< 0d20418725e13b0b1b39eacadca9264b72ad2858
      * Mode of querying. Can be `mode.bulk`, `mode.incrementing`.
+=======
+     * Mode of querying. Can be `mode.bulk`, `mode.autoincrementing`, `mode.incrementing`, `mode.by_query`.
+>>>>>>> Added description of the config keys.
      */
     public static final String MODE = "mode";
 
