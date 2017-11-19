@@ -63,10 +63,16 @@ public class JdbcConfigKeys {
     public static final String BULK_MODE = "mode.bulk";
 
     /**
-     * In the autoincrementing mode only new records are returned. A new record is selected by
-     * a column in the table that is generated automatically. Usually it is a ID column of type Long.
+     * The incrementing mode uses a strictly incrementing column on each table to detect only new
+     * rows. Note that this will not detect modifications or deletions of existing rows
      */
-    public static final String AUTOINCREMENTING_MODE= "mode.autoincrementing";
+    public static final String INCREMENTING_MODE = "mode.incrementing";
+
+    /**
+     * Table names against names of incrementing columns to use to detect new columns with the following format:
+     *  table_name_1.column_name, table_name_2.column_name
+     */
+    public static final String INCREMENTING_COLUMN_NAME = "mode.incrementing.column.name";
 
     // TODO: add description of other modes.
 

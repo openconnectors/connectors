@@ -36,4 +36,23 @@ public class JdbcUtilsTest {
         Map<String, List<String>> result = JdbcUtils.parseBlackListTables(validTestString);
         Assert.assertEquals(result, expectedResult);
     }
+
+    @Test
+    public void parseIncrementingTableColumnNamesTestValid() {
+        String validTestString = "table1.colA, table2.colB";
+        Map<String, String> expectedResult = new HashMap<>();
+        expectedResult.put("table1", "colA");
+        expectedResult.put("table2", "colB");
+        Map<String, String> result = JdbcUtils.parseIncrementingColumns(validTestString);
+        Assert.assertEquals(result, expectedResult);
+    }
+
+    @Test
+    public void parseIncrementingTableColumnNamesTestSingleTable() {
+        String validTestString = "table1.colA";
+        Map<String, String> expectedResult = new HashMap<>();
+        expectedResult.put("table1", "colA");
+        Map<String, String> result = JdbcUtils.parseIncrementingColumns(validTestString);
+        Assert.assertEquals(result, expectedResult);
+    }
 }

@@ -23,6 +23,7 @@ import org.openconnectors.util.ConnectionProvider;
 import org.openconnectors.util.JdbcUtils;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -37,14 +38,21 @@ public class BulkJdbcQuerier extends TableQuerier {
     }
 
     @Override
+    protected ResultSet executeQuery() throws SQLException {
+        return getPreparedStatement().executeQuery();
+    }
+
+    @Override
+    protected void updateCursor(int newRecordsNumber) {
+        // nothing to do
+    }
+
+    @Override
     protected PreparedStatement createPreparedStatement() throws SQLException {
         String identifierQuoteString = getConnection().getMetaData().getIdentifierQuoteString();
         String fromStatement = JdbcUtils.buildFromStatement(tableName, identifierQuoteString);
-        String columnsString = "*";
-        if (columnsToQuery != null && !columnsToQuery.isEmpty()) {
-            columnsString = String.join(", ", columnsToQuery);
-        }
-        String sqlString = "SELECT " + columnsString + " FROM " + fromStatement;
+        String columnsString = JdbcUtils.buildColumnsListString(columnsToQuery);
+        String sqlString = "SELECT " + columnsString + " " + fromStatement;
         return getConnection().prepareStatement(sqlString);
     }
 }
