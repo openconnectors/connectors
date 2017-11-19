@@ -32,13 +32,13 @@ import java.util.function.Consumer;
 public class QuerierThread extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(QuerierThread.class);
     private TableQuerier tableQuerier;
-    private long queryPeriod;
+    private long queryPeriodSeconds;
     private AtomicBoolean isActive = new AtomicBoolean(false);
     private Consumer<Collection<Record>> consumeFunction;
 
-    public QuerierThread(TableQuerier tableQuerier, long queryPeriod, Consumer<Collection<Record>> consumeFunction) {
+    public QuerierThread(TableQuerier tableQuerier, long queryPeriodSeconds, Consumer<Collection<Record>> consumeFunction) {
         this.tableQuerier = tableQuerier;
-        this.queryPeriod = queryPeriod;
+        this.queryPeriodSeconds = queryPeriodSeconds;
         this.consumeFunction = consumeFunction;
     }
 
@@ -54,7 +54,7 @@ public class QuerierThread extends Thread {
                 logger.error("", e);
             }
             try {
-                Thread.sleep(queryPeriod);
+                Thread.sleep(queryPeriodSeconds * 1000);
             } catch (InterruptedException e) {
                 // TODO: add log message
                 logger.error("", e);
