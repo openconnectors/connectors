@@ -19,7 +19,6 @@
 
 package org.openconnectors;
 
-import com.google.common.collect.Sets;
 import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
@@ -30,6 +29,7 @@ import org.openconnectors.source.TableQuerier;
 import org.openconnectors.util.CachedConnectionProvider;
 import org.openconnectors.util.ConnectionProvider;
 import org.openconnectors.util.DbConnectionConfig;
+import org.openconnectors.util.JdbcUtils;
 import org.openconnectors.util.Version;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +38,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class JdbcSourceConnector implements PushSourceConnector<Record> {
 
@@ -85,44 +83,50 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
 
         Connection connection = connectionProvider.getValidConnection();
 
-        Set<String> whiteListTables = getWhiteListTables();
-        Set<String> blackListTables = getBlackListTables();
+        Map<String, List<String>> whiteListTables = getTablesAndColumns(JdbcConfigKeys.WHITE_LIST_TABLES);
+        Map<String, List<String>> blackListTables = getTablesAndColumns(JdbcConfigKeys.BLACK_LIST_TABLES);
         if (!whiteListTables.isEmpty() && !blackListTables.isEmpty()) {
             String errorMsg = "Specify either \"white.list.tables\" or \"black.list.tables\", but not both";
             logger.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
-        List<String> tables = new ArrayList<>();
+        Map<String, List<String>> tables = new HashMap<>();
         String schemaPattern = this.config.getString(JdbcConfigKeys.SCHEMA_PATTERN);
         // TODO: handle types[] parameter
         ResultSet tablesResultSet = connection.getMetaData().getTables(null, schemaPattern, "%", null);
         final int tableNameColumnIndex = 3;
         while (tablesResultSet.next()) {
             String tableName = tablesResultSet.getString(tableNameColumnIndex).toLowerCase();
-            tables.add(tableName);
+            tables.put(tableName, null);
         }
 
-        List<String> filteredTables = new ArrayList<>();
+        Map<String, List<String>> filteredTables = new HashMap<>();
         if (!whiteListTables.isEmpty()) {
-            filteredTables.addAll(tables.stream()
-                    .filter(whiteListTables::contains)
-                    .collect(Collectors.toList())
-            );
+            whiteListTables
+                .keySet()
+                .stream()
+                .filter(tables::containsKey)
+                .forEach(tableName -> filteredTables.put(tableName, whiteListTables.get(tableName)));
         }
 
         if (!blackListTables.isEmpty()) {
-            filteredTables.addAll(tables.stream()
-                    .filter(table -> !blackListTables.contains(table))
-                    .collect(Collectors.toList())
-            );
+            tables
+                .keySet()
+                .stream()
+                .filter(tableName -> !blackListTables.containsKey(tableName))
+                .forEach(tableName -> filteredTables.put(tableName, null));
         }
         String mode = this.config.getString(JdbcConfigKeys.MODE);
         List<TableQuerier> tableQueriers = new ArrayList<>();
-        for (String tableName : filteredTables) {
+        for (String tableName : filteredTables.keySet()) {
             switch (mode) {
                 case JdbcConfigKeys.BULK_MODE:
                     tableQueriers.add(
-                            new BulkJdbcQuerier(getConnectionProvider(connectionConfig), schemaPattern, tableName)
+                            new BulkJdbcQuerier(
+                                    getConnectionProvider(connectionConfig),
+                                    schemaPattern,
+                                    tableName,
+                                    filteredTables.get(tableName))
                     );
                     break;
                 default:
@@ -154,31 +158,19 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
         this.consumeFunction = consumeFunction;
     }
 
-    private Set<String> getWhiteListTables() {
-        return getTables(JdbcConfigKeys.WHITE_LIST_TABLES);
-    }
-
-    private Set<String> getBlackListTables() {
-        return getTables(JdbcConfigKeys.BLACK_LIST_TABLES);
-    }
-
-    private Set<String> getTables(String listName) {
-        Set<String> tables = new HashSet<>();
-        if (listName == null || listName.isEmpty()) {
-            return tables;
+    private Map<String, List<String>> getTablesAndColumns(String tableConfigKey) {
+        String configLine = config.getString(tableConfigKey);
+        if (configLine == null || configLine.isEmpty()) {
+            return new HashMap<>(0);
         }
-        listName = config.getString(listName);
-        if (listName == null || listName.isEmpty()) {
-            return tables;
+        switch (tableConfigKey) {
+            case JdbcConfigKeys.BLACK_LIST_TABLES:
+                return JdbcUtils.parseBlackListTables(configLine);
+            case JdbcConfigKeys.WHITE_LIST_TABLES:
+                return JdbcUtils.parseWhiteListTablesAndColumns(configLine);
+            default:
+                return new HashMap<>(0);
         }
-        tables = Stream
-            .of(listName.split(","))
-            .map(t -> t.trim().toLowerCase())
-            .collect(Collectors.toSet());
-        if (tables == null) {
-            return Sets.newHashSet();
-        }
-        return tables;
     }
 
     private ConnectionProvider getConnectionProvider(DbConnectionConfig connectionConfig) {

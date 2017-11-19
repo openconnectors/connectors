@@ -20,24 +20,31 @@
 package org.openconnectors.source;
 
 import org.openconnectors.util.ConnectionProvider;
+import org.openconnectors.util.JdbcUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.List;
 
 public class BulkJdbcQuerier extends TableQuerier {
 
-    public BulkJdbcQuerier(ConnectionProvider connectionProvider, String schemaPattern, String tableName) {
+    private List<String> columnsToQuery;
+
+    public BulkJdbcQuerier(ConnectionProvider connectionProvider, String schemaPattern, String tableName,
+                           List<String> columnsToQuery) {
         super(connectionProvider, schemaPattern, tableName);
+        this.columnsToQuery = columnsToQuery;
     }
 
     @Override
     protected PreparedStatement createPreparedStatement() throws SQLException {
-        String defaultQuote = "";
-        String quoteString = getConnection().getMetaData().getIdentifierQuoteString();
-        if (quoteString == null) {
-            quoteString = defaultQuote;
+        String identifierQuoteString = getConnection().getMetaData().getIdentifierQuoteString();
+        String fromStatement = JdbcUtils.buildFromStatement(tableName, identifierQuoteString);
+        String columnsString = "*";
+        if (columnsToQuery != null && !columnsToQuery.isEmpty()) {
+            columnsString = String.join(", ", columnsToQuery);
         }
-        String sqlString = "SELECT * FROM " + quoteString + tableName + quoteString;
+        String sqlString = "SELECT " + columnsString + " FROM " + fromStatement;
         return getConnection().prepareStatement(sqlString);
     }
 }
