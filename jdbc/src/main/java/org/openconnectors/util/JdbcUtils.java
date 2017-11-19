@@ -11,9 +11,9 @@ public class JdbcUtils {
     public static String buildFromStatement(String tableName, String identifierQuoteString) {
         String defaultQuote = "";
         if (identifierQuoteString == null) {
-            return defaultQuote + tableName + defaultQuote;
+            return "FROM " + defaultQuote + tableName + defaultQuote;
         }
-        return tableName;
+        return "FROM " + tableName;
     }
 
     public static Map<String, List<String>> parseWhiteListTablesAndColumns(String configLine) {
@@ -44,5 +44,28 @@ public class JdbcUtils {
             result.put(tableName.trim().toLowerCase(), null);
         }
         return result;
+    }
+
+    public static Map<String, String> parseIncrementingColumns(String configLine) {
+        Map<String, String> tableColumnNames = new HashMap<>();
+        try {
+            for (String tableColumn : configLine.split("\\s*,\\s*")) {
+                String[] tblCol = tableColumn.split("\\.");
+                String tableName = tblCol[0];
+                String columnName = tblCol[1];
+                tableColumnNames.put(tableName, columnName);
+            }
+        } catch (Exception e) {
+            throw new JdbcSourceConfigParsingException("Failed to parse incrementing columns names.", e);
+        }
+        return tableColumnNames;
+    }
+
+    public static String buildColumnsListString(List<String> columns) {
+        String columnsString = "*";
+        if (columns != null && !columns.isEmpty()) {
+            columnsString = String.join(", ", columns);
+        }
+        return columnsString;
     }
 }

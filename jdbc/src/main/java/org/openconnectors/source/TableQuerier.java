@@ -49,7 +49,7 @@ public abstract class TableQuerier {
     }
 
     public List<Record> query() throws SQLException {
-        ResultSet resultSet = getPreparedStatement().executeQuery();
+        ResultSet resultSet = executeQuery();
         int columnsCount = tableMetaData.getColumnsCount();
         List<Record> records = new ArrayList<>();
         Object[] values;
@@ -60,8 +60,13 @@ public abstract class TableQuerier {
             }
             records.add(new Record(values, tableMetaData));
         }
+        updateCursor(records.size());
         return records;
     }
+
+    protected abstract ResultSet executeQuery() throws SQLException;
+
+    protected abstract void updateCursor(int newRecordsNumber);
 
     public PreparedStatement getPreparedStatement() throws SQLException {
         if (preparedStatement == null) {

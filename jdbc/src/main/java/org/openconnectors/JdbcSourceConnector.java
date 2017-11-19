@@ -24,6 +24,7 @@ import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
 import org.openconnectors.data.Record;
 import org.openconnectors.source.BulkJdbcQuerier;
+import org.openconnectors.source.AutoIncrementingJdbcQuerier;
 import org.openconnectors.source.QuerierThread;
 import org.openconnectors.source.TableQuerier;
 import org.openconnectors.util.CachedConnectionProvider;
@@ -117,6 +118,11 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                 .forEach(tableName -> filteredTables.put(tableName, null));
         }
         String mode = this.config.getString(JdbcConfigKeys.MODE);
+        Map<String, String> tableIncrementingColumnNames = new HashMap<>();
+        if (mode.equals(JdbcConfigKeys.INCREMENTING_MODE)) {
+            String configLine = this.config.getString(JdbcConfigKeys.INCREMENTING_COLUMN_NAME);
+            tableIncrementingColumnNames = JdbcUtils.parseIncrementingColumns(configLine);
+        }
         List<TableQuerier> tableQueriers = new ArrayList<>();
         for (String tableName : filteredTables.keySet()) {
             switch (mode) {
@@ -127,6 +133,17 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                                     schemaPattern,
                                     tableName,
                                     filteredTables.get(tableName))
+                    );
+                    break;
+                case JdbcConfigKeys.INCREMENTING_MODE:
+                    tableQueriers.add(
+                            new AutoIncrementingJdbcQuerier(
+                                    getConnectionProvider(connectionConfig),
+                                    schemaPattern,
+                                    tableName,
+                                    filteredTables.get(tableName),
+                                    tableIncrementingColumnNames.get(tableName)
+                            )
                     );
                     break;
                 default:
