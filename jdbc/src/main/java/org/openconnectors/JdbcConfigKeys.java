@@ -36,22 +36,24 @@ public class JdbcConfigKeys {
     public static final String CONNECTION_PASSWORD_CONFIG = "connection.password";
 
     /**
-     * Maximum number of retry to connect to the database.
+     * Maximum number of retries to connect to the database.
      */
      public static final String CONNECTION_MAX_ATTEMPT = "connection.max.attempt";
 
      /**
-     * Delay between retries to connect to the database.
+     * Delay in seconds between retries to connect to the database.
      */
     public static final String CONNECTION_RETRY_DELAY = "connection.retry.delay";
 
     /**
-     * Schema pattern.
+     * Schema name pattern; must match the schema name as it is stored in the database;
+     *  - "" retrieves those without a schema;
+     *  - null(not set) means that the schema name should not be used to narrow the search
      */
     public static final String SCHEMA_PATTERN = "schema.pattern";
 
     /**
-     * Mode of querying. Can be `mode.bulk`, `mode.autoincrementing`, `mode.incrementing`, `mode.by_query`.
+     * Mode of querying. Can be `mode.bulk`, `mode.incrementing`.
      */
     public static final String MODE = "mode";
 
@@ -64,7 +66,7 @@ public class JdbcConfigKeys {
 
     /**
      * The incrementing mode uses a strictly incrementing column on each table to detect only new
-     * rows. Note that this will not detect modifications or deletions of existing rows
+     * rows. Note that this will not detect modifications or deletions of existing rows.
      */
     public static final String INCREMENTING_MODE = "mode.incrementing";
 
