@@ -1,4 +1,4 @@
 package org.openconnectors.elasticsearch;
 
-public class HeronElasticSearchSink {
+public class ESSinkTopology {
 }

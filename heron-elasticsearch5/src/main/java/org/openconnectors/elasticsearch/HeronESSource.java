@@ -1,4 +1,4 @@
 package org.openconnectors.elasticsearch;
 
-public class HeronElasticSearchSource {
+public class HeronESSource {
 }

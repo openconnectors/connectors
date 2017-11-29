@@ -161,6 +161,13 @@ project(':elasticsearch5') {
 	}
 }
 
+//S3
+project(':s3') {
+    dependencies {
+        compile project(':core')
+    }
+}
+
 //Heron Kafka
 project(':heron-kafka010') {
 	dependencies {
@@ -216,6 +223,14 @@ project(':heron-elasticsearch5') {
 		compile project(':elasticsearch5')
 	}
 }
+
+//Heron S3
+project(':s3') {
+    dependencies {
+        compile project(':core')
+    }
+}
+
 
 //Examples local jvm
 project(':examples') {
