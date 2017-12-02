@@ -80,12 +80,6 @@ public class TableMetaData {
         }
     }
 
-    public enum ColumnType {
-        BOOLEAN, STRING, BYTE, SHORT, INT, LONG, FLOAT,
-        DOUBLE, BIG_DECIMAL, BYTE_ARRAY, DATE, TIME, TIMESTAMP,
-        CLOB, BLOB, ARRAY, REF, STRUCT;
-    }
-
     public static class TableMetaDataBuilder {
         private TableMetaData tableMetaData;
 

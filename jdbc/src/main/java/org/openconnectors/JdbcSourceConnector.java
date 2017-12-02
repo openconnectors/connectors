@@ -67,19 +67,7 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
     @Override
     public void open(Config config) throws Exception {
         configureConnector(config);
-        final String dbUrl = config.getString(JdbcConfigKeys.CONNECTION_URL_CONFIG);
-        final String dbUser = config.getString(JdbcConfigKeys.CONNECTION_USER_CONFIG);
-        final String dbPassword = config.getString(JdbcConfigKeys.CONNECTION_PASSWORD_CONFIG);
-        final int dbMaxConnectionAttempts = config.getInt(JdbcConfigKeys.CONNECTION_MAX_ATTEMPT);
-        final int dbConnectionRetryDelay = config.getInt(JdbcConfigKeys.CONNECTION_RETRY_DELAY);
-        final DbConnectionConfig connectionConfig = DbConnectionConfig.Builder
-                .newBuilder()
-                .setUrl(dbUrl)
-                .setUser(dbUser)
-                .setPassword(dbPassword)
-                .setMaxConnectionAttempts(dbMaxConnectionAttempts)
-                .setConnectionRetryDelay(dbConnectionRetryDelay)
-                .build();
+        final DbConnectionConfig connectionConfig = JdbcUtils.getConnectionConfig(config);
         ConnectionProvider connectionProvider = getConnectionProvider(connectionConfig);
 
         Connection connection = connectionProvider.getValidConnection();
