@@ -1,5 +1,7 @@
 package org.openconnectors.util;
 
+import org.openconnectors.JdbcConfigKeys;
+import org.openconnectors.config.Config;
 import org.openconnectors.exceptions.JdbcSourceConfigParsingException;
 
 import java.util.Arrays;
@@ -32,7 +34,6 @@ public class JdbcUtils {
             }
             return result;
         } catch (Exception e) {
-            System.out.println("Throwing exception");
             throw new JdbcSourceConfigParsingException("Failed to parse tables and columns config string.", e);
         }
 
@@ -67,5 +68,21 @@ public class JdbcUtils {
             columnsString = String.join(", ", columns);
         }
         return columnsString;
+    }
+
+    public static DbConnectionConfig getConnectionConfig(Config config) {
+        final String dbUrl = config.getString(JdbcConfigKeys.CONNECTION_URL_CONFIG);
+        final String dbUser = config.getString(JdbcConfigKeys.CONNECTION_USER_CONFIG);
+        final String dbPassword = config.getString(JdbcConfigKeys.CONNECTION_PASSWORD_CONFIG);
+        final int dbMaxConnectionAttempts = config.getInt(JdbcConfigKeys.CONNECTION_MAX_ATTEMPT);
+        final int dbConnectionRetryDelay = config.getInt(JdbcConfigKeys.CONNECTION_RETRY_DELAY);
+        return DbConnectionConfig.Builder
+                .newBuilder()
+                .setUrl(dbUrl)
+                .setUser(dbUser)
+                .setPassword(dbPassword)
+                .setMaxConnectionAttempts(dbMaxConnectionAttempts)
+                .setConnectionRetryDelay(dbConnectionRetryDelay)
+                .build();
     }
 }
