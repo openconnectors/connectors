@@ -11,7 +11,7 @@ import org.openconnectors.util.SimpleCopier;
 public class StdInToKafkaCopier extends SimpleCopier<String, KeyValue<String, String>> {
 
     public StdInToKafkaCopier() {
-        super(new StdinSource(), new KafkaSink<>(), x -> new KeyValue<>(x, x));
+        super(new StdinSource(), new KafkaSink010<>(), x -> new KeyValue<>(x, x));
     }
 
     public static void main(String[] args) throws Exception {

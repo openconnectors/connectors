@@ -6,6 +6,8 @@ allprojects {
 
 }
 
+ext.heronVersion = "0.17.0"
+
 subprojects {
 
 	def getVersionTag = { ->
@@ -110,13 +112,6 @@ project(':core') {
 
 }
 
-//Heron Adapter
-project(':heron-adapter') {
-	dependencies {
-		compile project(':core')
-	}
-}
-
 //Pulsar
 project(':pulsar') {
 	dependencies {
@@ -125,7 +120,7 @@ project(':pulsar') {
 }
 
 //Kafka
-project(':kafka') {
+project(':kafka010') {
 	dependencies {
 		compile project(':core')
 	}
@@ -159,16 +154,83 @@ project(':cassandra') {
 	}
 }
 
-//Heron Adapters
-project(':heron-adapter') {
+//Elasticsearch
+project(':elasticsearch5') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
+//S3
+project(':s3') {
+    dependencies {
+        compile project(':core')
+    }
+}
+
+//Heron Kafka
+project(':heron-kafka010') {
+	dependencies {
+		compile project(':core')
+		compile project(':kafka010')
+	}
+}
+
+//Heron Pulsar
+project(':heron-pulsar') {
+	dependencies {
+		compile project(':core')
+		compile project(':pulsar')
+	}
+}
+
+//Heron Aerospike
+project(':heron-aerospike') {
 	dependencies {
 		compile project(':core')
 		compile project(':aerospike')
-		compile project(':twitter')
-		compile project(':cassandra')
-		compile project(':kafka')
 	}
 }
+
+//Heron Cassandra
+project(':heron-cassandra') {
+	dependencies {
+		compile project(':core')
+		compile project(':cassandra')
+	}
+}
+
+//Heron JDBC
+project(':heron-jdbc') {
+	dependencies {
+		compile project(':core')
+		compile project(':jdbc')
+	}
+}
+
+//Heron Twitter
+project(':heron-twitter') {
+	dependencies {
+		compile project(':core')
+		compile project(':twitter')
+	}
+}
+
+//Heron ElasticSearch
+project(':heron-elasticsearch5') {
+	dependencies {
+		compile project(':core')
+		compile project(':elasticsearch5')
+	}
+}
+
+//Heron S3
+project(':s3') {
+    dependencies {
+        compile project(':core')
+    }
+}
+
 
 //Examples local jvm
 project(':examples') {
@@ -177,18 +239,20 @@ project(':examples') {
 		compile project(':aerospike')
 		compile project(':twitter')
 		compile project(':cassandra')
-		compile project(':kafka')
+		compile project(':kafka010')
+		compile project(':pulsar')
 	}
 }
 
 //Examples heron toplogies
 project(':examples-heron') {
     dependencies {
-		compile project(':core')
-		compile project(':heron-adapter')
-		compile project(':aerospike')
-		compile project(':twitter')
-		compile project(':cassandra')
-		compile project(':kafka')
+    	compile project(':heron-kafka010')
+    	compile project(':heron-pulsar')
+    	compile project(':heron-cassandra')
+    	compile project(':heron-elasticsearch5')
+    	compile project(':heron-aerospike')
+    	compile project(':heron-jdbc')
+    	compile project(':heron-twitter')
     }
 }

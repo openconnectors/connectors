@@ -10,9 +10,8 @@ public class KafkaSourceTopology {
 
     public static void main(String[] args) throws Exception {
         Builder processingGraphBuilder = Builder.createBuilder();
-        processingGraphBuilder.newSource(new HeronKafkaSource<>()).log();
-        Config config = new Config();
-        config.setNumContainers(1);
+        processingGraphBuilder.newSource(new HeronKafka010Source<>()).log();
+        Config config = Config.defaultConfig();
         new Runner().run("KafkaSourceTopology", config, processingGraphBuilder);
     }
 }
