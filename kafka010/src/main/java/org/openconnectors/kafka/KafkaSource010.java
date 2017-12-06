@@ -25,6 +25,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
 import org.slf4j.Logger;
@@ -36,8 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-
-import static org.openconnectors.config.ConfigUtils.verifyExists;
 
 /**
  * Simple Kafka Source to emit strng messages from a topic
@@ -55,14 +54,16 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
 
     @Override
     public void open(Config config) throws Exception {
-
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_TOPIC);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_GROUP_ID);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_ENABLED);
+        ConfigUtils.verifyExists(
+                config,
+                ConfigKeys.KAFKA_SOURCE_TOPIC,
+                ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS,
+                ConfigKeys.KAFKA_SOURCE_GROUP_ID,
+                ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES,
+                ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS,
+                ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS,
+                ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_ENABLED
+        );
 
         props = new Properties();
 

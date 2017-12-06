@@ -19,21 +19,23 @@
 
 package org.openconnectors.aerospike;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-
-import com.aerospike.client.*;
+import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.Bin;
+import com.aerospike.client.Host;
+import com.aerospike.client.Key;
+import com.aerospike.client.Value;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openconnectors.aerospike.AeroSpikeConfigKeys.*;
-import static org.openconnectors.config.ConfigUtils.verifyExists;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Simple AeroSpike sink
@@ -57,15 +59,18 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     @Override
     public void open(Config config) throws Exception {
         LOG.info("Opening Connection");
-        verifyExists(config, AEROSPIKE_SEEDHOSTS);
-        verifyExists(config, AEROSPIKE_KEYSPACE);
-        verifyExists(config, AEROSPIKE_COLUMNNAME);
-        keySpace = config.getString(AEROSPIKE_KEYSPACE);
-        keySet = config.getString(AEROSPIKE_KEYSET, "");
-        columnName = config.getString(AEROSPIKE_COLUMNNAME);
+        ConfigUtils.verifyExists(
+                config,
+                AeroSpikeConfigKeys.AEROSPIKE_SEEDHOSTS,
+                AeroSpikeConfigKeys.AEROSPIKE_KEYSPACE,
+                AeroSpikeConfigKeys.AEROSPIKE_COLUMNNAME
+        );
+        keySpace = config.getString(AeroSpikeConfigKeys.AEROSPIKE_KEYSPACE);
+        keySet = config.getString(AeroSpikeConfigKeys.AEROSPIKE_KEYSET, "");
+        columnName = config.getString(AeroSpikeConfigKeys.AEROSPIKE_COLUMNNAME);
         writePolicy = new WritePolicy();
-        writePolicy.maxRetries = config.getInt(AEROSPIKE_MAXRETRIES, 1);
-        writePolicy.setTimeout(config.getInt(AEROSPIKE_WRITETIMEOUTMS, 100));
+        writePolicy.maxRetries = config.getInt(AeroSpikeConfigKeys.AEROSPIKE_MAXRETRIES, 1);
+        writePolicy.setTimeout(config.getInt(AeroSpikeConfigKeys.AEROSPIKE_WRITETIMEOUTMS, 100));
         createClient(config);
     }
 
@@ -77,7 +82,7 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public String getVersion() {
-        return AEROSPIKE_CONNECTOR_VERSION;
+        return AeroSpikeConfigKeys.AEROSPIKE_CONNECTOR_VERSION;
     }
 
     @Override
@@ -94,7 +99,7 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     public void flush() { }
 
     private void createClient(Config config) {
-        String[] hosts = config.getString(AEROSPIKE_SEEDHOSTS).split(",");
+        String[] hosts = config.getString(AeroSpikeConfigKeys.AEROSPIKE_SEEDHOSTS).split(",");
         if (hosts.length <= 0) {
             throw new RuntimeException("Invalid Seed Hosts");
         }
@@ -104,10 +109,10 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
             aeroSpikeHosts[i] = new Host(hostPort[0], Integer.valueOf(hostPort[1]));
         }
         ClientPolicy policy = new ClientPolicy();
-        if (!config.getString(AEROSPIKE_USERNAME, "").isEmpty()
-                && !config.getString(AEROSPIKE_PASSWORD, "").isEmpty()) {
-            policy.user = config.getString(AEROSPIKE_USERNAME);
-            policy.password = config.getString(AEROSPIKE_PASSWORD);
+        if (!config.getString(AeroSpikeConfigKeys.AEROSPIKE_USERNAME, "").isEmpty()
+                && !config.getString(AeroSpikeConfigKeys.AEROSPIKE_PASSWORD, "").isEmpty()) {
+            policy.user = config.getString(AeroSpikeConfigKeys.AEROSPIKE_USERNAME);
+            policy.password = config.getString(AeroSpikeConfigKeys.AEROSPIKE_PASSWORD);
         }
         client = new AerospikeClient(policy, aeroSpikeHosts);
     }

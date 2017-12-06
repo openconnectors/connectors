@@ -24,6 +24,7 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
@@ -34,8 +35,6 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-
-import static org.openconnectors.config.ConfigUtils.verifyExists;
 
 /**
  * Simple Kafka Sink to publish string messages to a topic
@@ -82,12 +81,14 @@ public class KafkaSink010<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public void open(Config config) throws Exception {
-
-        verifyExists(config, ConfigKeys.KAFKA_SINK_TOPIC);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_ACKS);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_BATCH_SIZE);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_MAX_REQUEST_SIZE);
+        ConfigUtils.verifyExists(
+                config,
+                ConfigKeys.KAFKA_SINK_TOPIC,
+                ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS,
+                ConfigKeys.KAFKA_SINK_ACKS,
+                ConfigKeys.KAFKA_SINK_BATCH_SIZE,
+                ConfigKeys.KAFKA_SINK_MAX_REQUEST_SIZE
+        );
 
         topic = config.getString(ConfigKeys.KAFKA_SINK_TOPIC);
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS));

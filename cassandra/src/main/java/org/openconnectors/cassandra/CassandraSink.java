@@ -24,6 +24,7 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
@@ -32,9 +33,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
-import static org.openconnectors.cassandra.CassandraConfigKeys.*;
-
 
 /**
  * Simple Cassandra sink
@@ -59,15 +57,18 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public void open(Config config) throws Exception {
-        verifyExists(config, CASSANDRA_ROOTS);
-        verifyExists(config, CASSANDRA_KEYSPACE);
-        verifyExists(config, CASSANDRA_KEYNAME);
-        verifyExists(config, CASSANDRA_COLUMNFAMILY);
-        verifyExists(config, CASSANDRA_COLUMNNAME);
-        keySpace = config.getString(CASSANDRA_KEYSPACE);
-        keyName = config.getString(CASSANDRA_KEYNAME);
-        columnFamily = config.getString(CASSANDRA_COLUMNFAMILY);
-        columnName = config.getString(CASSANDRA_COLUMNNAME);
+        ConfigUtils.verifyExists(
+                config,
+                CassandraConfigKeys.CASSANDRA_ROOTS,
+                CassandraConfigKeys.CASSANDRA_KEYSPACE,
+                CassandraConfigKeys.CASSANDRA_KEYNAME,
+                CassandraConfigKeys.CASSANDRA_COLUMNFAMILY,
+                CassandraConfigKeys.CASSANDRA_COLUMNNAME
+        );
+        keySpace = config.getString(CassandraConfigKeys.CASSANDRA_KEYSPACE);
+        keyName = config.getString(CassandraConfigKeys.CASSANDRA_KEYNAME);
+        columnFamily = config.getString(CassandraConfigKeys.CASSANDRA_COLUMNFAMILY);
+        columnName = config.getString(CassandraConfigKeys.CASSANDRA_COLUMNNAME);
         createClient(config);
         statement = session.prepare("INSERT INTO " + columnFamily + " ("
                 + keyName + ", " + columnName + ") VALUES (?, ?)");
@@ -81,7 +82,7 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
 
     @Override
     public String getVersion() {
-        return CASSANDRA_CONNECTOR_VERSION;
+        return CassandraConfigKeys.CASSANDRA_CONNECTOR_VERSION;
     }
 
     @Override
@@ -96,14 +97,8 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     @Override
     public void flush() { }
 
-    private void verifyExists(Config config, String key) {
-        if (config.getString(key) == null) {
-            throw new IllegalArgumentException("Required property '" + key + "' not set.");
-        }
-    }
-
     private void createClient(Config config) {
-        String[] hosts = config.getString(CASSANDRA_ROOTS).split(",");
+        String[] hosts = config.getString(CassandraConfigKeys.CASSANDRA_ROOTS).split(",");
         if (hosts.length <= 0) {
             throw new RuntimeException("Invalid cassandra roots");
         }

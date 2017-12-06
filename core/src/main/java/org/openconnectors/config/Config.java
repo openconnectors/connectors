@@ -41,5 +41,4 @@ public interface Config {
     Object getObject(final String propertyName, final Object defaultValue);
 
     Set<String> getPropertyKeys();
-
 }

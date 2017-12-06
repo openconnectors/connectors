@@ -18,5 +18,5 @@ public class TwitterFireHoseConfigKeys {
 
     public static final String CLIENT_BUFFER_SIZE = "twitter-source.bufferSize";
 
-    public static final String TWITTER_CONNECTOR_VERION = "0.0.1";
+    public static final String TWITTER_CONNECTOR_VERSION = "0.0.1";
 }

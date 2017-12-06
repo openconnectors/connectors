@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import com.twitter.hbc.core.endpoint.StatusesSampleEndpoint;
 import com.twitter.hbc.core.endpoint.StreamingEndpoint;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
 import org.slf4j.Logger;
@@ -41,9 +42,6 @@ import com.twitter.hbc.core.processor.HosebirdMessageProcessor;
 import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
-
-import static org.openconnectors.config.ConfigUtils.verifyExists;
-import static org.openconnectors.twitter.TwitterFireHoseConfigKeys.*;
 
 /**
  * Simple Push based Twitter FireHose Source
@@ -65,10 +63,14 @@ public class TwitterFireHose implements PushSourceConnector<String> {
 
     @Override
     public void open(Config config) throws Exception {
-        verifyExists(config, CONSUMER_KEY);
-        verifyExists(config, CONSUMER_SECRET);
-        verifyExists(config, TOKEN);
-        verifyExists(config, TOKEN_SECRET);
+        ConfigUtils.verifyExists(
+                config,
+                TwitterFireHoseConfigKeys.CONSUMER_KEY,
+                TwitterFireHoseConfigKeys.CONSUMER_SECRET,
+                TwitterFireHoseConfigKeys.TOKEN,
+                TwitterFireHoseConfigKeys.TOKEN_SECRET
+        );
+
         waitObject = new Object();
         startThread(config);
     }
@@ -85,7 +87,7 @@ public class TwitterFireHose implements PushSourceConnector<String> {
 
     @Override
     public String getVersion() {
-        return TWITTER_CONNECTOR_VERION;
+        return TwitterFireHoseConfigKeys.TWITTER_CONNECTOR_VERSION;
     }
 
     // ------ Custom endpoints
@@ -112,14 +114,14 @@ public class TwitterFireHose implements PushSourceConnector<String> {
     }
 
     private void startThread(Config config) {
-        Authentication auth = new OAuth1(config.getString(CONSUMER_KEY),
-                config.getString(CONSUMER_SECRET),
-                config.getString(TOKEN),
-                config.getString(TOKEN_SECRET));
+        Authentication auth = new OAuth1(config.getString(TwitterFireHoseConfigKeys.CONSUMER_KEY),
+                config.getString(TwitterFireHoseConfigKeys.CONSUMER_SECRET),
+                config.getString(TwitterFireHoseConfigKeys.TOKEN),
+                config.getString(TwitterFireHoseConfigKeys.TOKEN_SECRET));
 
         BasicClient client = new ClientBuilder()
-                .name(config.getString(CLIENT_NAME, "openconnector-twitter-source"))
-                .hosts(config.getString(CLIENT_HOSTS, Constants.STREAM_HOST))
+                .name(config.getString(TwitterFireHoseConfigKeys.CLIENT_NAME, "openconnector-twitter-source"))
+                .hosts(config.getString(TwitterFireHoseConfigKeys.CLIENT_HOSTS, Constants.STREAM_HOST))
                 .endpoint(new SampleStatusesEndpoint().createEndpoint())
                 .authentication(auth)
                 .processor(new HosebirdMessageProcessor() {
@@ -128,7 +130,7 @@ public class TwitterFireHose implements PushSourceConnector<String> {
                     @Override
                     public void setup(InputStream input) {
                         reader = new DelimitedStreamReader(input, Constants.DEFAULT_CHARSET,
-                            Integer.parseInt(config.getString(CLIENT_BUFFER_SIZE, "50000")));
+                            Integer.parseInt(config.getString(TwitterFireHoseConfigKeys.CLIENT_BUFFER_SIZE, "50000")));
                     }
 
                     @Override

@@ -4,6 +4,7 @@ import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
 import org.slf4j.Logger;
@@ -12,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
-
-import static org.openconnectors.config.ConfigUtils.verifyExists;
 
 public class PulsarSource implements PushSourceConnector<byte[]> {
 
@@ -35,10 +34,11 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
 
     @Override
     public void open(Config config) throws Exception {
-
-        verifyExists(config, PulsarConfigKeys.PULSAR_SOURCE_TOPIC);
-        verifyExists(config, PulsarConfigKeys.PULSAR_SOURCE_BROKER_ROOT_URL);
-        verifyExists(config, PulsarConfigKeys.PULSAR_SOURCE_SUBSCRIPTION);
+        ConfigUtils.verifyExists(config,
+                PulsarConfigKeys.PULSAR_SOURCE_TOPIC,
+                PulsarConfigKeys.PULSAR_SOURCE_BROKER_ROOT_URL,
+                PulsarConfigKeys.PULSAR_SOURCE_SUBSCRIPTION
+        );
 
         String pulsarBrokerRootUrl = config.getString(PulsarConfigKeys.PULSAR_SOURCE_BROKER_ROOT_URL);
         client = PulsarClient.create(pulsarBrokerRootUrl);
