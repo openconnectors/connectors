@@ -34,7 +34,8 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
 
     @Override
     public void open(Config config) throws Exception {
-        ConfigUtils.verifyExists(config,
+        ConfigUtils.verifyExists(
+                config,
                 PulsarConfigKeys.PULSAR_SOURCE_TOPIC,
                 PulsarConfigKeys.PULSAR_SOURCE_BROKER_ROOT_URL,
                 PulsarConfigKeys.PULSAR_SOURCE_SUBSCRIPTION
