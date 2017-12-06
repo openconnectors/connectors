@@ -4,6 +4,7 @@ import org.apache.pulsar.client.api.MessageId;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.openconnectors.config.Config;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.slf4j.Logger;
@@ -11,8 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
-
-import static org.openconnectors.config.ConfigUtils.verifyExists;
 
 public class PulsarSink implements SinkConnector<byte[]> {
     private static final Logger LOG = LoggerFactory.getLogger(PulsarSink.class);
@@ -45,8 +44,11 @@ public class PulsarSink implements SinkConnector<byte[]> {
 
     @Override
     public void open(Config config) throws Exception {
-        verifyExists(config, PulsarConfigKeys.PULSAR_SINK_TOPIC);
-        verifyExists(config, PulsarConfigKeys.PULSAR_SINK_BROKER_ROOT_URL);
+        ConfigUtils.verifyExists(
+                config,
+                PulsarConfigKeys.PULSAR_SINK_TOPIC,
+                PulsarConfigKeys.PULSAR_SINK_BROKER_ROOT_URL
+        );
 
         String pulsarBrokerRootUrl = config.getString(PulsarConfigKeys.PULSAR_SINK_BROKER_ROOT_URL);
         client = PulsarClient.create(pulsarBrokerRootUrl);
