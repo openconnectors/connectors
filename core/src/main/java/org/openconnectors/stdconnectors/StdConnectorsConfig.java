@@ -19,10 +19,14 @@
 
 package org.openconnectors.stdconnectors;
 
-public class ConfigKeys {
+class StdConnectorsConfig {
+    static final String STD_CONNECTORS_VERSION = "0.0.1";
 
-    public static final String DEFAULT_OUTPUT_FORMAT = "[%s] %s";
-    public static final String OUTPUT_FORMAT_KEY = "std.out.format";
+    static final class Defaults {
+        static final String OUTPUT_FORMAT = "[%s] %s";
+    }
 
-    private ConfigKeys() {}
+    static final class Keys {
+        static final String OUTPUT_FORMAT_KEY = "std.out.format";
+    }
 }

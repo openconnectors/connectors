@@ -73,6 +73,6 @@ public class StdinSource implements PullSourceConnector<String> {
 
     @Override
     public String getVersion() {
-        return StdStreamConVer.getVersion();
+        return StdConnectorsConfig.STD_CONNECTORS_VERSION;
     }
 }
