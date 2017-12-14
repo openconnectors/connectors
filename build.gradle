@@ -230,19 +230,6 @@ project(':s3') {
     }
 }
 
-
-//Examples local jvm
-project(':examples') {
-	dependencies {
-		compile project(':core')
-		compile project(':aerospike')
-		compile project(':twitter')
-		compile project(':cassandra')
-		compile project(':kafka010')
-		compile project(':pulsar')
-	}
-}
-
 //Examples heron toplogies
 project(':examples-heron') {
     dependencies {

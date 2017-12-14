@@ -15,5 +15,4 @@ include ":core",
         ":heron-cassandra",
         ":heron-elasticsearch5",
         ":heron-s3",
-        ":examples",
         ":examples-heron"
