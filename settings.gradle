@@ -16,3 +16,5 @@ include ":core",
         ":heron-elasticsearch5",
         ":heron-s3",
         ":examples-heron"
+include 'examples'
+

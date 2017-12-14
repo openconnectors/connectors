@@ -1,5 +1,7 @@
 package org.openconnectors;
 
+import org.apache.pulsar.client.api.SubscriptionType;
+
 public final class PulsarConfig {
     public static class Keys {
         private static final String PULSAR_SINK_PREFIX = "pulsar.sink.";
@@ -17,6 +19,8 @@ public final class PulsarConfig {
 
     static class Defaults {
         static final String BROKER_URL = "pulsar://localhost:6650";
+        static final SubscriptionType SUBSCRIPTION_TYPE = SubscriptionType.Exclusive;
+
     }
 
     static final String PULSAR_CONNECTOR_VERSION = "0.0.1";

@@ -111,6 +111,14 @@ subprojects {
 project(':core') {
 }
 
+//Examples
+project(':examples') {
+	dependencies {
+		compile project(':pulsar')
+		compile project(':heron-pulsar')
+	}
+}
+
 //Pulsar
 project(':pulsar') {
 	dependencies {

@@ -1,16 +1,23 @@
 package org.openconnectors;
 
+import org.apache.pulsar.client.api.ConsumerConfiguration;
 import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
+import org.apache.pulsar.client.api.SubscriptionType;
 import org.openconnectors.config.Config;
-import org.openconnectors.connect.ConnectorContext;
+import org.openconnectors.config.ConfigUtils;
 import org.openconnectors.connect.PushSourceConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Time;
+import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class PulsarSource implements PushSourceConnector<byte[]> {
@@ -19,27 +26,28 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
     private final String topic;
     private final String brokerUrl;
     private final String subscription;
-    private java.util.function.Consumer<Collection<byte[]>> consumeFunction;
+    private final ConsumerConfiguration consumerConfiguration;
+    private java.util.function.Consumer<Collection<byte[]>> consumerFunction;
 
     private PulsarClient client;
     private org.apache.pulsar.client.api.Consumer consumer;
 
     @Override
     public void setConsumer(java.util.function.Consumer<Collection<byte[]>> consumeFunction) {
-        this.consumeFunction = consumeFunction;
+        this.consumerFunction = consumeFunction;
     }
 
     @Override
     public void start() throws Exception {
         client = PulsarClient.create(brokerUrl);
-        consumer = client.subscribe(topic, subscription);
+        consumer = client.subscribe(topic, subscription, consumerConfiguration);
 
         Thread runnerThread = new Thread(() -> {
             try {
                 while (true) {
                     // Wait for a message`
                     Message msg = consumer.receive();
-                    consumeFunction.accept(Collections.singleton(msg.getData()));
+                    consumerFunction.accept(Collections.singleton(msg.getData()));
 
                     // Acknowledge the message so that it can be deleted by broker
                     consumer.acknowledgeAsync(msg);
@@ -54,13 +62,8 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
 
     @Override
     public void close() throws Exception {
-        if (consumer != null) {
-            consumer.close();
-        }
-
-        if (client != null) {
-            client.close();
-        }
+        if (consumer != null) consumer.close();
+        if (client != null) client.close();
     }
 
     @Override
@@ -72,7 +75,10 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
         this.topic = builder.topic;
         this.brokerUrl = builder.brokerUrl;
         this.subscription = builder.subscription;
-        setConsumer(builder.consumeFunction);
+        consumerConfiguration = new ConsumerConfiguration();
+        consumerConfiguration.setSubscriptionType(builder.subscriptionType);
+        consumerConfiguration.setAckTimeout(builder.ackTimeout, TimeUnit.SECONDS);
+        setConsumer(builder.consumerFunction);
     }
 
     public static Builder newBuilder() {
@@ -83,10 +89,13 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
         private String topic;
         private String brokerUrl;
         private String subscription;
-        private Consumer<Collection<byte[]>> consumeFunction;
+        private Consumer<Collection<byte[]>> consumerFunction;
+        private SubscriptionType subscriptionType;
+        private int ackTimeout;
 
         private Builder() {
             this.brokerUrl = PulsarConfig.Defaults.BROKER_URL;
+            this.subscriptionType = PulsarConfig.Defaults.SUBSCRIPTION_TYPE;
         }
 
         public Builder setTopic(String topic) {
@@ -104,8 +113,18 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
             return this;
         }
 
+        public Builder setSubscriptionType(SubscriptionType subscriptionType) {
+            this.subscriptionType = subscriptionType;
+            return this;
+        }
+
         public Builder setConsumerFunction(Consumer<Collection<byte[]>> consumerFunction) {
-            this.consumeFunction = consumerFunction;
+            this.consumerFunction = consumerFunction;
+            return this;
+        }
+
+        public Builder setAckTimeoutSeconds(long ackTimeoutSeconds) {
+            this.ackTimeout = ackTimeout;
             return this;
         }
 
@@ -125,6 +144,12 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
         }
 
         public PulsarSource build() {
+            ConfigUtils.validate(new HashMap<String, Object>() {{
+                put("topic", topic);
+                put("subscription", subscription);
+                put("consumerFunction", consumerFunction);
+            }});
+
             return new PulsarSource(this);
         }
     }

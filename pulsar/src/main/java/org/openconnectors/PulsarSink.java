@@ -52,6 +52,10 @@ public final class PulsarSink implements SinkConnector<byte[]> {
         return PulsarConfig.PULSAR_CONNECTOR_VERSION;
     }
 
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
     private PulsarSink(Builder builder) {
         this.brokerUrl = builder.brokerUrl;
         this.topic = builder.topic;
@@ -60,6 +64,10 @@ public final class PulsarSink implements SinkConnector<byte[]> {
     public static final class Builder {
         private String brokerUrl;
         private String topic;
+
+        private Builder() {
+            brokerUrl = PulsarConfig.Defaults.BROKER_URL;
+        }
 
         public Builder setBrokerUrl(String brokerUrl) {
             this.brokerUrl = brokerUrl;

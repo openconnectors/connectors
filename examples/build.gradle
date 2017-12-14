@@ -1,0 +1,24 @@
+apply plugin: 'application'
+
+mainClassName = "org.openconnectors.example.PulsarSourceExample"
+
+startScripts.enabled = true
+
+def defaultClasspath = jar.outputs.files + project.configurations.runtime
+def defaultOutputDir = file("${project.buildDir}/tmp")
+
+task pulsarSourceExample(type: CreateStartScripts) {
+  mainClassName   = "org.openconnectors.examples.pulsar.PulsarSourceExample"
+  applicationName = "pulsar-source-example"
+  classpath       = defaultClasspath
+  outputDir       = defaultOutputDir
+}
+
+applicationDistribution.into("bin") {
+  from(pulsarSourceExample)
+  fileMode = 0755
+}
+
+dependencies {
+  compile 'com.twitter.heron:heron-api:0.17.1'
+}
