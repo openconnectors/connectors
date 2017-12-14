@@ -111,14 +111,6 @@ subprojects {
 project(':core') {
 }
 
-//Examples
-project(':examples') {
-	dependencies {
-		compile project(':pulsar')
-		compile project(':heron-pulsar')
-	}
-}
-
 //Pulsar
 project(':pulsar') {
 	dependencies {
@@ -235,18 +227,5 @@ project(':heron-elasticsearch5') {
 project(':s3') {
     dependencies {
         compile project(':core')
-    }
-}
-
-//Examples heron toplogies
-project(':examples-heron') {
-    dependencies {
-    	compile project(':heron-kafka010')
-    	compile project(':heron-pulsar')
-    	compile project(':heron-cassandra')
-    	compile project(':heron-elasticsearch5')
-    	compile project(':heron-aerospike')
-    	compile project(':heron-jdbc')
-    	compile project(':heron-twitter')
     }
 }
