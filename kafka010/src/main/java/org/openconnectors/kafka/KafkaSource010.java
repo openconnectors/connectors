@@ -24,6 +24,7 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
@@ -37,61 +38,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import static org.openconnectors.config.ConfigUtils.verifyExists;
-
 /**
  * Simple Kafka Source to emit strng messages from a topic
  */
 public class KafkaSource010<V> implements PushSourceConnector<V> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSource010.class);
-
-    private Consumer<String, V> consumer;
-    private Properties props;
-    private String topic;
-    private Boolean autoCommitEnabled;
-
+    private static final long serialVersionUID = -6255843583086784051L;
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaSource010.class.getName());
+    private final String topic;
+    private final boolean autoCommitEnabled;
+    private final Properties props;
     private java.util.function.Consumer<Collection<V>> consumeFunction;
 
-    @Override
-    public void open(Config config) throws Exception {
-
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_TOPIC);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_GROUP_ID);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS);
-        verifyExists(config, ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_ENABLED);
-
-        props = new Properties();
-
-        topic = config.getString(ConfigKeys.KAFKA_SOURCE_TOPIC);
-        autoCommitEnabled = config.getBoolean(ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_ENABLED);
-
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_BOOTSTRAP_SERVERS));
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, config.getString(ConfigKeys.KAFKA_SOURCE_GROUP_ID));
-        props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, config.getInt(ConfigKeys.KAFKA_SOURCE_FETCH_MIN_BYTES).toString());
-        props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, config.getLong(ConfigKeys.KAFKA_SOURCE_AUTO_COMMIT_INTERVAL_MS).toString());
-        props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, config.getLong(ConfigKeys.KAFKA_SOURCE_SESSION_TIMEOUT_MS).toString());
-
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-
-        this.start();
-
-    }
+    private Consumer<String, V> consumer;
 
     @Override
-    public void close() throws IOException {
-        LOG.info("Stopping kafka source");
-        if(consumer != null) {
-            consumer.close();
-        }
-        LOG.info("Kafka source stopped.");
-    }
-
-    public void start() throws Exception {
+    public void open() throws Exception {
         Thread runnerThread = new Thread(() -> {
             LOG.info("Starting kafka source");
             consumer = new KafkaConsumer<>(props);
@@ -99,7 +60,8 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
             LOG.info("Kafka source started.");
             ConsumerRecords<String, V> records;
             List<V> values = new ArrayList<>();
-            while(true){
+
+            while (true){
                 records = consumer.poll(1000);
                 values.clear();
                 for (ConsumerRecord<String, V> record : records) {
@@ -118,8 +80,17 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
     }
 
     @Override
+    public void close() throws IOException {
+        LOG.info("Stopping kafka source");
+        if(consumer != null) {
+            consumer.close();
+        }
+        LOG.info("Kafka source stopped.");
+    }
+
+    @Override
     public String getVersion() {
-        return KafkaConnectorVersion010.getVersion();
+        return KafkaConfig.KAFKA_CONNECTOR_VERSION;
     }
 
     @Override
@@ -129,7 +100,94 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
 
     @Override
     public void initialize(ConnectorContext ctx) {
-        // Nothing for now.
     }
 
+    private KafkaSource010(Builder<V> builder) {
+        topic = builder.topic;
+        autoCommitEnabled = builder.autoCommitEnabled;
+        props = builder.props;
+        setConsumer(builder.consumeFunction);
+    }
+
+    public static class Builder<V> {
+        private String topic;
+        private boolean autoCommitEnabled;
+        private Properties props;
+        private java.util.function.Consumer<Collection<V>> consumeFunction;
+
+        private Builder() {
+            autoCommitEnabled = KafkaConfig.Defaults.AUTO_COMMIT_ENABLED;
+            props = new Properties();
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaConfig.Defaults.KEY_SERIALIZER_CLASS);
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaConfig.Defaults.VALUE_SERIALIZER_CLASS);
+        }
+
+        public Builder setTopic(String topic) {
+            this.topic = topic;
+            return this;
+        }
+
+        public Builder setBootstrapServers(String bootstrapServers) {
+            props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+            return this;
+        }
+
+        public Builder setGroupId(String groupId) {
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+            return this;
+        }
+
+        public Builder setAutoCommitEnabled(boolean autoCommitEnabled) {
+            this.autoCommitEnabled = autoCommitEnabled;
+            return this;
+        }
+
+        public Builder setMinBytes(int minBytes) {
+            props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, minBytes);
+            return this;
+        }
+
+        public Builder setAutoCommitIntervalMillis(long autoCommitIntervalMillis) {
+            props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitIntervalMillis);
+            return this;
+        }
+
+        public Builder setSessionTimeoutMillis(long sessionTimeoutMillis) {
+            props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeoutMillis);
+            return this;
+        }
+
+        public Builder setConsumeFunction(java.util.function.Consumer<Collection<V>> consumeFunction) {
+            this.consumeFunction = consumeFunction;
+            return this;
+        }
+
+        public Builder usingConfigProvider(Config config) {
+            config.verify(
+                    KafkaConfig.Keys.KAFKA_SOURCE_TOPIC,
+                    KafkaConfig.Keys.KAFKA_SOURCE_GROUP_ID,
+                    KafkaConfig.Keys.KAFKA_SOURCE_FETCH_MIN_BYTES
+            );
+            topic = config.getString(KafkaConfig.Keys.KAFKA_SOURCE_TOPIC);
+            props.put(ConsumerConfig.GROUP_ID_CONFIG, config.getString(KafkaConfig.Keys.KAFKA_SOURCE_GROUP_ID));
+            props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, config.getLong(KafkaConfig.Keys.KAFKA_SOURCE_FETCH_MIN_BYTES));
+            return this;
+        }
+
+        public KafkaSource010 build() {
+            Arrays.asList(
+                    ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                    ConsumerConfig.GROUP_ID_CONFIG,
+                    ConsumerConfig.FETCH_MIN_BYTES_CONFIG,
+                    ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG,
+                    ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG
+            ).forEach(prop -> {
+                if (props.getProperty(prop) == null) {
+                    throw new IllegalArgumentException(String.format("Property %s is missing from the config", prop));
+                }
+            });
+
+            return new KafkaSource010<>(this);
+        }
+    }
 }

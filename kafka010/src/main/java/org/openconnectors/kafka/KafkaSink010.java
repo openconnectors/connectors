@@ -31,28 +31,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.CompletableFuture;
-
-import static org.openconnectors.config.ConfigUtils.verifyExists;
 
 /**
  * Simple Kafka Sink to publish string messages to a topic
  */
 public class KafkaSink010<K, V> implements SinkConnector<KeyValue<K, V>> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSink010.class);
-
+    private static final long serialVersionUID = 1858275615268645616L;
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaSink010.class.getName());
+    private final String topic;
     private Producer<K, V> producer;
-    private Properties props = new Properties();
-    private String topic;
 
     @Override
     public CompletableFuture<Void> publish(Collection<KeyValue<K, V>> messages) {
         ProducerRecord<K, V> record;
-        for (KeyValue<K, V> tuple : messages) {
-            record = new ProducerRecord<>(topic, tuple.getKey(), tuple.getValue());
+        for (KeyValue<K, V> keyValue : messages) {
+            record = new ProducerRecord<>(topic, keyValue.getKey(), keyValue.getValue());
             LOG.debug("Message sending to kafka, record={}.", record);
             producer.send(record);
         }
@@ -67,40 +64,89 @@ public class KafkaSink010<K, V> implements SinkConnector<KeyValue<K, V>> {
     @Override
     public void close() throws IOException {
         producer.close();
-        LOG.info("Kafka sink stopped.");
+        LOG.info("Kafka sink stopped");
     }
 
     @Override
     public String getVersion() {
-        return KafkaConnectorVersion010.getVersion();
+        return KafkaConfig.KAFKA_CONNECTOR_VERSION;
     }
 
     @Override
     public void initialize(ConnectorContext ctx) {
-        // Nothing for now
     }
 
     @Override
-    public void open(Config config) throws Exception {
+    public void open() {
+    }
 
-        verifyExists(config, ConfigKeys.KAFKA_SINK_TOPIC);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_ACKS);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_BATCH_SIZE);
-        verifyExists(config, ConfigKeys.KAFKA_SINK_MAX_REQUEST_SIZE);
+    private KafkaSink010(Builder builder) {
+        topic = builder.topic;
+        producer = new KafkaProducer<>(builder.props);
+    }
 
-        topic = config.getString(ConfigKeys.KAFKA_SINK_TOPIC);
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_BOOTSTRAP_SERVERS));
-        props.put(ProducerConfig.ACKS_CONFIG, config.getString(ConfigKeys.KAFKA_SINK_ACKS));
-        props.put(ProducerConfig.BATCH_SIZE_CONFIG, config.getLong(ConfigKeys.KAFKA_SINK_BATCH_SIZE).toString());
-        props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, config.getLong(ConfigKeys.KAFKA_SINK_MAX_REQUEST_SIZE).toString());
+    public static final class Builder {
+        private Properties props;
+        private String topic;
 
-        props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        private Builder() {
+            props = new Properties();
+            props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaConfig.Defaults.KEY_SERIALIZER_CLASS);
+            props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaConfig.Defaults.VALUE_SERIALIZER_CLASS);
+        }
 
-        producer = new KafkaProducer<>(props);
+        public Builder setTopic(String topic) {
+            this.topic = topic;
+            return this;
+        }
 
-        LOG.info("Kafka sink started.");
+        public Builder setBootstrapServers(String bootstrapServers) {
+            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+            return this;
+        }
 
+        public Builder setAcks(String acksConfig) {
+            props.put(ProducerConfig.ACKS_CONFIG, acksConfig);
+            return this;
+        }
+
+        public Builder setBatchSize(long batchSize) {
+            props.put(ProducerConfig.BATCH_SIZE_CONFIG, batchSize);
+            return this;
+        }
+
+        public Builder setMaxRequestSize(long maxRequestSize) {
+            props.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, maxRequestSize);
+            return this;
+        }
+
+        public Builder usingConfigProvider(Config config) {
+            config.verify(
+                    KafkaConfig.Keys.KAFKA_SINK_BOOTSTRAP_SERVERS,
+                    KafkaConfig.Keys.KAFKA_SINK_ACKS,
+                    KafkaConfig.Keys.KAFKA_SINK_BATCH_SIZE,
+                    KafkaConfig.Keys.KAFKA_SINK_MAX_REQUEST_SIZE
+            );
+            setBootstrapServers(config.getString(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
+            setAcks(config.getString(ProducerConfig.ACKS_CONFIG));
+            setBatchSize(config.getLong(ProducerConfig.BATCH_SIZE_CONFIG));
+            setMaxRequestSize(config.getLong(ProducerConfig.MAX_REQUEST_SIZE_CONFIG));
+            return this;
+        }
+
+        public KafkaSink010 build() {
+            Arrays.asList(
+                    ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                    ProducerConfig.ACKS_CONFIG,
+                    ProducerConfig.BATCH_SIZE_CONFIG,
+                    ProducerConfig.MAX_REQUEST_SIZE_CONFIG
+            ).forEach(prop -> {
+                if (props.getProperty(prop) == null) {
+                    throw new IllegalArgumentException(String.format("Property %s is missing from the config", prop));
+                }
+            });
+
+            return new KafkaSink010(this);
+        }
     }
 }

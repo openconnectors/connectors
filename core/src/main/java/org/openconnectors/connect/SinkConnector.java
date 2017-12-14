@@ -29,9 +29,8 @@ import java.util.concurrent.CompletableFuture;
  * @param <U> Type for messages to be submitted for publishing
  */
 public interface SinkConnector<U> extends Connector {
-
     /**
-     * Attempt to publish a type safe collection of messages
+     * Attempt to publish a type-safe collection of messages
      *
      * @param messages Objects to process in the sink
      * @return Completable future fo async publish request

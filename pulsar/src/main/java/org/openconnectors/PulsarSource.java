@@ -13,48 +13,35 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-import static org.openconnectors.config.ConfigUtils.verifyExists;
-
 public class PulsarSource implements PushSourceConnector<byte[]> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(PulsarSource.class);
-
+    private static final long serialVersionUID = 2611918383355492860L;
+    private static final Logger LOG = LoggerFactory.getLogger(PulsarSource.class.getName());
+    private final String topic;
+    private final String brokerUrl;
+    private final String subscription;
     private java.util.function.Consumer<Collection<byte[]>> consumeFunction;
-    PulsarClient client;
+
+    private PulsarClient client;
     private org.apache.pulsar.client.api.Consumer consumer;
 
     @Override
-    public void setConsumer(Consumer<Collection<byte[]>> consumeFunction) {
+    public void setConsumer(java.util.function.Consumer<Collection<byte[]>> consumeFunction) {
         this.consumeFunction = consumeFunction;
     }
 
     @Override
     public void initialize(ConnectorContext ctx) {
-
     }
 
     @Override
-    public void open(Config config) throws Exception {
-
-        verifyExists(config, PulsarConfigKeys.PULSAR_SOURCE_TOPIC);
-        verifyExists(config, PulsarConfigKeys.PULSAR_SOURCE_BROKER_ROOT_URL);
-        verifyExists(config, PulsarConfigKeys.PULSAR_SOURCE_SUBSCRIPTION);
-
-        String pulsarBrokerRootUrl = config.getString(PulsarConfigKeys.PULSAR_SOURCE_BROKER_ROOT_URL);
-        client = PulsarClient.create(pulsarBrokerRootUrl);
-
-        String topic = config.getString(PulsarConfigKeys.PULSAR_SOURCE_TOPIC);
-        String subscription = config.getString(PulsarConfigKeys.PULSAR_SOURCE_SUBSCRIPTION);
+    public void open() throws Exception {
+        client = PulsarClient.create(brokerUrl);
         consumer = client.subscribe(topic, subscription);
-        start();
-    }
 
-    private void start() {
         Thread runnerThread = new Thread(() -> {
             try {
-
                 while (true) {
-                    // Wait for a message
+                    // Wait for a message`
                     Message msg = consumer.receive();
                     consumeFunction.accept(Collections.singleton(msg.getData()));
 
@@ -62,10 +49,10 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
                     consumer.acknowledgeAsync(msg);
                 }
             } catch (PulsarClientException e) {
-                LOG.error("Error receiving message from pulsar consumer", e);
+                LOG.error("Error receiving message from Pulsar consumer", e);
             }
         });
-        runnerThread.setName("Pulsar Source Thread");
+        runnerThread.setName("Pulsar Source thread");
         runnerThread.start();
     }
 
@@ -74,6 +61,7 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
         if (consumer != null) {
             consumer.close();
         }
+
         if (client != null) {
             client.close();
         }
@@ -81,6 +69,67 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
 
     @Override
     public String getVersion() {
-        return PulsarConfigKeys.PULSAR_CONNECTOR_VERSION;
+        return PulsarConfig.PULSAR_CONNECTOR_VERSION;
+    }
+
+    private PulsarSource(Builder builder) {
+        this.topic = builder.topic;
+        this.brokerUrl = builder.brokerUrl;
+        this.subscription = builder.subscription;
+        setConsumer(builder.consumeFunction);
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private String topic;
+        private String brokerUrl;
+        private String subscription;
+        private Consumer<Collection<byte[]>> consumeFunction;
+
+        private Builder() {
+            this.brokerUrl = PulsarConfig.Defaults.BROKER_URL;
+        }
+
+        public Builder setTopic(String topic) {
+            this.topic = topic;
+            return this;
+        }
+
+        public Builder setBrokerUrl(String brokerUrl) {
+            this.brokerUrl = brokerUrl;
+            return this;
+        }
+
+        public Builder setSubscription(String subscription) {
+            this.subscription = subscription;
+            return this;
+        }
+
+        public Builder setConsumerFunction(Consumer<Collection<byte[]>> consumerFunction) {
+            this.consumeFunction = consumerFunction;
+            return this;
+        }
+
+        public Builder usingConfigProvider(Config config) {
+            config.verify(
+                    PulsarConfig.Keys.PULSAR_SOURCE_TOPIC,
+                    PulsarConfig.Keys.PULSAR_SOURCE_SUBSCRIPTION
+            );
+
+            this.brokerUrl = (config.getString(PulsarConfig.Keys.PULSAR_SINK_BROKER_ROOT_URL) == null) ?
+                    PulsarConfig.Defaults.BROKER_URL :
+                    config.getString(PulsarConfig.Keys.PULSAR_SINK_BROKER_ROOT_URL);
+
+            this.topic = config.getString(PulsarConfig.Keys.PULSAR_SOURCE_TOPIC);
+            this.subscription = config.getString(PulsarConfig.Keys.PULSAR_SOURCE_SUBSCRIPTION);
+            return this;
+        }
+
+        public PulsarSource build() {
+            return new PulsarSource(this);
+        }
     }
 }

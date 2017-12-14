@@ -27,50 +27,28 @@ import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
-import static org.openconnectors.cassandra.CassandraConfigKeys.*;
+import static org.openconnectors.cassandra.CassandraConfig.CASSANDRA_CONNECTOR_VERSION;
 
 
 /**
  * Simple Cassandra sink
  */
 public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(CassandraSink.class);
-
-    // ----- Runtime fields
+    private static final long serialVersionUID = -6315650519679320003L;
+    private PreparedStatement statement;
     private Cluster cluster;
     private Session session;
-    private String keySpace;
-    private String keyName;
-    private String columnFamily;
-    private String columnName;
-    private PreparedStatement statement;
 
     @Override
     public void initialize(ConnectorContext ctx) {
-        // Nothing really
     }
 
     @Override
-    public void open(Config config) throws Exception {
-        verifyExists(config, CASSANDRA_ROOTS);
-        verifyExists(config, CASSANDRA_KEYSPACE);
-        verifyExists(config, CASSANDRA_KEYNAME);
-        verifyExists(config, CASSANDRA_COLUMNFAMILY);
-        verifyExists(config, CASSANDRA_COLUMNNAME);
-        keySpace = config.getString(CASSANDRA_KEYSPACE);
-        keyName = config.getString(CASSANDRA_KEYNAME);
-        columnFamily = config.getString(CASSANDRA_COLUMNFAMILY);
-        columnName = config.getString(CASSANDRA_COLUMNNAME);
-        createClient(config);
-        statement = session.prepare("INSERT INTO " + columnFamily + " ("
-                + keyName + ", " + columnName + ") VALUES (?, ?)");
+    public void open() {
     }
 
     @Override
@@ -94,29 +72,86 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     }
 
     @Override
-    public void flush() { }
-
-    private void verifyExists(Config config, String key) {
-        if (config.getString(key) == null) {
-            throw new IllegalArgumentException("Required property '" + key + "' not set.");
-        }
+    public void flush() {
     }
 
-    private void createClient(Config config) {
-        String[] hosts = config.getString(CASSANDRA_ROOTS).split(",");
+    private CassandraSink(Builder builder) {
+        String[] hosts = builder.roots.split(",");
         if (hosts.length <= 0) {
             throw new RuntimeException("Invalid cassandra roots");
         }
-        Cluster.Builder b = Cluster.builder();
-        for (int i = 0; i < hosts.length; ++i) {
-            String[] hostPort = hosts[i].split(":");
-            b.addContactPoint(hostPort[0]);
+        Cluster.Builder clusterBuilder = Cluster.builder();
+        for (String host : hosts) {
+            String[] hostPort = host.split(":");
+            clusterBuilder.addContactPoint(hostPort[0]);
             if (hostPort.length > 1) {
-                b.withPort(Integer.valueOf(hostPort[1]));
+                clusterBuilder.withPort(Integer.valueOf(hostPort[1]));
             }
         }
-        cluster = b.build();
+        cluster = clusterBuilder.build();
+
+        String rawStatement = String.format("INSERT INTO %s (%s, %s) VALUES (?, ?)",
+                builder.columnFamily,
+                builder.keyName,
+                builder.columnName);
+
         session = cluster.connect();
-        session.execute("USE " + keySpace);
+        statement = session.prepare(rawStatement);
+        session.execute(String.format("USE %s", builder.keyspace));
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private String roots, keyspace, keyName, columnFamily, columnName;
+
+        private Builder() {}
+
+        public Builder setRoots(String roots) {
+            this.roots = roots;
+            return this;
+        }
+
+        public Builder setKeyspace(String keyspace) {
+            this.keyspace = keyspace;
+            return this;
+        }
+
+        public Builder setKeyName(String keyName) {
+            this.keyName = keyName;
+            return this;
+        }
+
+        public Builder setColumnFamily(String columnFamily) {
+            this.columnFamily = columnFamily;
+            return this;
+        }
+
+        public Builder setColumnName(String columnName) {
+            this.columnName = columnName;
+            return this;
+        }
+
+        public Builder usingConfigProvider(Config config) {
+            config.verify(
+                    CassandraConfig.Keys.CASSANDRA_ROOTS,
+                    CassandraConfig.Keys.CASSANDRA_COLUMNFAMILY,
+                    CassandraConfig.Keys.CASSANDRA_COLUMNNAME,
+                    CassandraConfig.Keys.CASSANDRA_KEYNAME,
+                    CassandraConfig.Keys.CASSANDRA_KEYSPACE
+            );
+            this.roots = config.getString(CassandraConfig.Keys.CASSANDRA_ROOTS);
+            this.columnFamily = config.getString(CassandraConfig.Keys.CASSANDRA_COLUMNFAMILY);
+            this.columnName = config.getString(CassandraConfig.Keys.CASSANDRA_COLUMNNAME);
+            this.keyName = config.getString(CassandraConfig.Keys.CASSANDRA_KEYNAME);
+            this.keyspace = config.getString(CassandraConfig.Keys.CASSANDRA_KEYSPACE);
+            return this;
+        }
+
+        public CassandraSink build() {
+            return new CassandraSink(this);
+        }
     }
 }

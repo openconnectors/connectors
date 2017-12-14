@@ -51,9 +51,9 @@ public class SimpleCopier<I, O> {
         this.transformer = transformer;
     }
 
-    public void setup(Config config) throws Exception {
-        this.pullSource.open(config);
-        this.sink.open(config);
+    public void setup() throws Exception {
+        this.pullSource.open();
+        this.sink.open();
     }
 
     public void run() throws Exception {

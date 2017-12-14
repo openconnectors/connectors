@@ -19,54 +19,42 @@
 
 package org.openconnectors.aerospike;
 
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-
-import com.aerospike.client.*;
+import com.aerospike.client.AerospikeClient;
+import com.aerospike.client.Bin;
+import com.aerospike.client.Host;
+import com.aerospike.client.Key;
+import com.aerospike.client.Value;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
-import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.openconnectors.aerospike.AeroSpikeConfigKeys.*;
-import static org.openconnectors.config.ConfigUtils.verifyExists;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+
+import static org.openconnectors.aerospike.AeroSpikeConfig.AEROSPIKE_CONNECTOR_VERSION;
+import static org.openconnectors.aerospike.AeroSpikeConfig.Defaults;
 
 /**
  * Simple AeroSpike sink
  */
 public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(AeroSpikeSink.class);
-
-    // ----- Runtime fields
+    private static final long serialVersionUID = 6387089772307974259L;
+    private static final Logger LOG = LoggerFactory.getLogger(AeroSpikeSink.class.getName());
+    private final String keyspace, columnName, keySet;
+    private final WritePolicy writePolicy;
     private AerospikeClient client;
-    private String keySpace;
-    private String keySet;
-    private String columnName;
-    private WritePolicy writePolicy;
+
 
     @Override
     public void initialize(ConnectorContext ctx) {
-        // Nothing really
     }
 
     @Override
-    public void open(Config config) throws Exception {
-        LOG.info("Opening Connection");
-        verifyExists(config, AEROSPIKE_SEEDHOSTS);
-        verifyExists(config, AEROSPIKE_KEYSPACE);
-        verifyExists(config, AEROSPIKE_COLUMNNAME);
-        keySpace = config.getString(AEROSPIKE_KEYSPACE);
-        keySet = config.getString(AEROSPIKE_KEYSET, "");
-        columnName = config.getString(AEROSPIKE_COLUMNNAME);
-        writePolicy = new WritePolicy();
-        writePolicy.maxRetries = config.getInt(AEROSPIKE_MAXRETRIES, 1);
-        writePolicy.setTimeout(config.getInt(AEROSPIKE_WRITETIMEOUTMS, 100));
-        createClient(config);
+    public void open() throws Exception {
     }
 
     @Override
@@ -83,7 +71,7 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     @Override
     public CompletableFuture<Void> publish(Collection<KeyValue<K, V>> tuples) {
         for (KeyValue<K, V> tuple : tuples) {
-            Key key = new Key(keySpace, keySet, tuple.getKey().toString());
+            Key key = new Key(keyspace, keySet, tuple.getKey().toString());
             Bin bin = new Bin(columnName, Value.getAsBlob(tuple.getValue()));
             client.put(writePolicy, key, bin);
         }
@@ -91,24 +79,90 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     }
 
     @Override
-    public void flush() { }
+    public void flush() {
+    }
 
-    private void createClient(Config config) {
-        String[] hosts = config.getString(AEROSPIKE_SEEDHOSTS).split(",");
+    private Host[] getAerospikeHosts(String seedHosts) {
+        String[] hosts = seedHosts.split(",");
         if (hosts.length <= 0) {
             throw new RuntimeException("Invalid Seed Hosts");
         }
+
         Host[] aeroSpikeHosts = new Host[hosts.length];
+
         for (int i = 0; i < hosts.length; ++i) {
             String[] hostPort = hosts[i].split(":");
-            aeroSpikeHosts[i] = new Host(hostPort[0], Integer.valueOf(hostPort[1]));
+            Host aeroSpikeHost = new Host(hostPort[0], Integer.valueOf(hostPort[1]));
+            aeroSpikeHosts[i] = aeroSpikeHost;
         }
-        ClientPolicy policy = new ClientPolicy();
-        if (!config.getString(AEROSPIKE_USERNAME, "").isEmpty()
-                && !config.getString(AEROSPIKE_PASSWORD, "").isEmpty()) {
-            policy.user = config.getString(AEROSPIKE_USERNAME);
-            policy.password = config.getString(AEROSPIKE_PASSWORD);
+        return aeroSpikeHosts;
+    }
+
+    private AeroSpikeSink(Builder builder) {
+        String seedHosts = builder.seedHosts;
+        keyspace = builder.keyspace;
+        columnName = builder.columnName;
+        keySet = builder.keySet;
+        writePolicy = builder.writePolicy;
+        String user = builder.user;
+        String password = builder.password;
+        ClientPolicy clientPolicy = new ClientPolicy();
+        clientPolicy.user = user;
+        clientPolicy.password = password;
+        client = new AerospikeClient(clientPolicy, getAerospikeHosts(seedHosts));
+    }
+
+    public static final class Builder {
+        private String seedHosts, keyspace, columnName, keySet, user, password;
+        private int maxRetries, writeTimeoutMs;
+        private WritePolicy writePolicy;
+
+        private Builder() {
+            this.maxRetries = Defaults.MAX_RETRIES;
+            this.writeTimeoutMs = Defaults.WRITE_TIMEOUT_MS;
+            this.keySet = Defaults.KEY_SET;
         }
-        client = new AerospikeClient(policy, aeroSpikeHosts);
+
+        public Builder setSeedHosts(String seedHosts) {
+            this.seedHosts = seedHosts;
+            return this;
+        }
+
+        public Builder setKeyspace(String keyspace) {
+            this.keyspace = keyspace;
+            return this;
+        }
+
+        public Builder setColumnName(String columnName) {
+            this.columnName = columnName;
+            return this;
+        }
+
+        public Builder setUser(String user) {
+            this.user = user;
+            return this;
+        }
+
+        public Builder setPassword(String password) {
+            this.password = password;
+            return this;
+        }
+
+        public Builder setMaxRetries(int maxRetries) {
+            this.maxRetries = maxRetries;
+            return this;
+        }
+
+        public Builder setWriteTimeoutMs(int writeTimeoutMs) {
+            this.writeTimeoutMs = writeTimeoutMs;
+            return this;
+        }
+
+        public AeroSpikeSink build() {
+            this.writePolicy = new WritePolicy();
+            writePolicy.maxRetries = maxRetries;
+            writePolicy.setTimeout(writeTimeoutMs);
+            return new AeroSpikeSink(this);
+        }
     }
 }
