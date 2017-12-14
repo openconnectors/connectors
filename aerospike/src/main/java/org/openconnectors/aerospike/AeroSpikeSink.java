@@ -48,15 +48,6 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     private final WritePolicy writePolicy;
     private AerospikeClient client;
 
-
-    @Override
-    public void initialize(ConnectorContext ctx) {
-    }
-
-    @Override
-    public void open() throws Exception {
-    }
-
     @Override
     public void close() throws Exception {
         client.close();
@@ -112,12 +103,12 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
         client = new AerospikeClient(clientPolicy, getAerospikeHosts(seedHosts));
     }
 
-    public static final class Builder {
+    public static final class Builder<K, V> {
         private String seedHosts, keyspace, columnName, keySet, user, password;
         private int maxRetries, writeTimeoutMs;
         private WritePolicy writePolicy;
 
-        private Builder() {
+        Builder() {
             this.maxRetries = Defaults.MAX_RETRIES;
             this.writeTimeoutMs = Defaults.WRITE_TIMEOUT_MS;
             this.keySet = Defaults.KEY_SET;
@@ -158,11 +149,11 @@ public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
             return this;
         }
 
-        public AeroSpikeSink build() {
+        AeroSpikeSink<K, V> build() {
             this.writePolicy = new WritePolicy();
             writePolicy.maxRetries = maxRetries;
             writePolicy.setTimeout(writeTimeoutMs);
-            return new AeroSpikeSink(this);
+            return new AeroSpikeSink<>(this);
         }
     }
 }

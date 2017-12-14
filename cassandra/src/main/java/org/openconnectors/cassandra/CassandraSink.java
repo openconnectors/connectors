@@ -24,7 +24,6 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
 import org.openconnectors.config.Config;
-import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
 
@@ -32,7 +31,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 import static org.openconnectors.cassandra.CassandraConfig.CASSANDRA_CONNECTOR_VERSION;
-
 
 /**
  * Simple Cassandra sink
@@ -42,14 +40,6 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     private PreparedStatement statement;
     private Cluster cluster;
     private Session session;
-
-    @Override
-    public void initialize(ConnectorContext ctx) {
-    }
-
-    @Override
-    public void open() {
-    }
 
     @Override
     public void close() throws Exception {
@@ -100,41 +90,37 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
         session.execute(String.format("USE %s", builder.keyspace));
     }
 
-    public static Builder newBuilder() {
-        return new Builder();
-    }
-
-    public static final class Builder {
+    public static final class Builder<K, V> {
         private String roots, keyspace, keyName, columnFamily, columnName;
 
-        private Builder() {}
+        Builder() {}
 
-        public Builder setRoots(String roots) {
+        public Builder<K, V> setRoots(String roots) {
             this.roots = roots;
             return this;
         }
 
-        public Builder setKeyspace(String keyspace) {
+        public Builder<K, V> setKeyspace(String keyspace) {
             this.keyspace = keyspace;
             return this;
         }
 
-        public Builder setKeyName(String keyName) {
+        public Builder<K, V> setKeyName(String keyName) {
             this.keyName = keyName;
             return this;
         }
 
-        public Builder setColumnFamily(String columnFamily) {
+        public Builder<K, V> setColumnFamily(String columnFamily) {
             this.columnFamily = columnFamily;
             return this;
         }
 
-        public Builder setColumnName(String columnName) {
+        public Builder<K, V> setColumnName(String columnName) {
             this.columnName = columnName;
             return this;
         }
 
-        public Builder usingConfigProvider(Config config) {
+        public Builder<K, V> usingConfigProvider(Config config) {
             config.verify(
                     CassandraConfig.Keys.CASSANDRA_ROOTS,
                     CassandraConfig.Keys.CASSANDRA_COLUMNFAMILY,
@@ -150,8 +136,8 @@ public class CassandraSink<K, V> implements SinkConnector<KeyValue<K, V>> {
             return this;
         }
 
-        public CassandraSink build() {
-            return new CassandraSink(this);
+        CassandraSink<K, V> build() {
+            return new CassandraSink<>(this);
         }
     }
 }

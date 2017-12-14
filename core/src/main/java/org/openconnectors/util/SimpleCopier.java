@@ -32,28 +32,24 @@ import java.util.function.Function;
  * Copy Topology template targeting unit testing
  */
 public class SimpleCopier<I, O> {
+    private final PullSourceConnector<I> pullSource;
+    private final SinkConnector<O> sink;
+    private final Function<I, O> transformer;
 
-    private PullSourceConnector<I> pullSource;
-    private SinkConnector<O> sink;
-    private Function<I, O> transformer;
-
-    public SimpleCopier(PullSourceConnector<I> source, SinkConnector<O> sink,
+    public SimpleCopier(PullSourceConnector<I> source,
+                        SinkConnector<O> sink,
                         Function<I, O> transformer) {
         this.pullSource = source;
         this.sink = sink;
         this.transformer = transformer;
     }
 
-    public SimpleCopier(PushSourceConnector<I> source, SinkConnector<O> sink,
+    public SimpleCopier(PushSourceConnector<I> source,
+                        SinkConnector<O> sink,
                         Function<I, O> transformer) {
         this.pullSource = new PullWrapperOnPushSource<>(source, 1024 * 1024, PullWrapperOnPushSource.BufferStrategy.BLOCK);
         this.sink = sink;
         this.transformer = transformer;
-    }
-
-    public void setup() throws Exception {
-        this.pullSource.open();
-        this.sink.open();
     }
 
     public void run() throws Exception {
@@ -72,5 +68,4 @@ public class SimpleCopier<I, O> {
             sink.publish(output);
         }
     }
-
 }

@@ -39,12 +39,8 @@ public class HeronAeroSpikeSink<K, V> implements Sink<KeyValue<K, V>> {
     @Override
     public void setup(Context ctx) {
         if (sink == null) {
-            sink = new AeroSpikeSink<>();
-        }
-        try {
-            sink.open(new ConfigProvider());
-        } catch (Exception e) {
-            throw new RuntimeException("Exception during setup of Aerospike Sink", e);
+            sink = new AeroSpikeSink.Builder<K, V>()
+                    .build();
         }
     }
 

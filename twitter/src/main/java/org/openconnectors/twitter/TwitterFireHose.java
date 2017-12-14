@@ -60,11 +60,6 @@ public class TwitterFireHose implements Connector {
     }
 
     @Override
-    public void open() throws Exception {
-        startThread();
-    }
-
-    @Override
     public void close() throws Exception {
         stopThread();
     }
@@ -99,7 +94,8 @@ public class TwitterFireHose implements Connector {
         }
     }
 
-    private void startThread() {
+    @Override
+    public void start() {
         Authentication auth = new OAuth1(
                 consumerKey,
                 consumerSecret,

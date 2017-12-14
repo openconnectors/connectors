@@ -32,7 +32,9 @@ public interface Connector extends AutoCloseable, Versionable, Serializable {
      *
      * @param ctx Connector context for distributed runtimes
      */
-    void initialize(final ConnectorContext ctx);
+    default void initialize(final ConnectorContext ctx) {
+    }
 
-    void open() throws Exception;
+    default void start() throws Exception {
+    }
 }

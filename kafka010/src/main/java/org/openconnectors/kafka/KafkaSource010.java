@@ -52,7 +52,7 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
     private Consumer<String, V> consumer;
 
     @Override
-    public void open() throws Exception {
+    public void start() throws Exception {
         Thread runnerThread = new Thread(() -> {
             LOG.info("Starting kafka source");
             consumer = new KafkaConsumer<>(props);

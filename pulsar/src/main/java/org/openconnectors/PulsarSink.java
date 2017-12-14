@@ -36,23 +36,15 @@ public final class PulsarSink implements SinkConnector<byte[]> {
     }
 
     @Override
-    public void initialize(ConnectorContext ctx) {
-    }
-
-    @Override
-    public void open() throws Exception {
+    public void start() throws Exception {
         client = PulsarClient.create(brokerUrl);
         producer = client.createProducer(topic);
     }
 
     @Override
     public void close() throws Exception {
-        if (producer != null) {
-            producer.close();
-        }
-        if (client != null) {
-            client.close();
-        }
+        if (producer != null) producer.close();
+        if (client != null) client.close();
     }
 
     @Override

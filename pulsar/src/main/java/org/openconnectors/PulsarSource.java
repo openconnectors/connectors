@@ -30,11 +30,7 @@ public class PulsarSource implements PushSourceConnector<byte[]> {
     }
 
     @Override
-    public void initialize(ConnectorContext ctx) {
-    }
-
-    @Override
-    public void open() throws Exception {
+    public void start() throws Exception {
         client = PulsarClient.create(brokerUrl);
         consumer = client.subscribe(topic, subscription);
 

@@ -33,13 +33,12 @@ import java.util.concurrent.LinkedBlockingQueue;
  * Copy Topology template targeting unit testing
  */
 public class PullWrapperOnPushSource<I> implements PullSourceConnector<I> {
-
+    private static final long serialVersionUID = -6268410211096592480L;
     private PushSourceConnector<I> pushSource;
     private BufferStrategy bufferStrategy;
     private BlockingQueue<I> blockingQueue;
 
     public enum BufferStrategy {
-        DROP,
         BLOCK
     }
 
@@ -52,12 +51,6 @@ public class PullWrapperOnPushSource<I> implements PullSourceConnector<I> {
     @Override
     public void initialize(ConnectorContext ctx) {
         this.pushSource.initialize(ctx);
-    }
-
-    @Override
-    public void open(Config config) throws Exception {
-        this.pushSource.setConsumer(messages -> this.consume(messages));
-        this.pushSource.open(config);
     }
 
     @Override

@@ -19,8 +19,6 @@
 
 package org.openconnectors.stdconnectors;
 
-import org.openconnectors.config.Config;
-import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 
 import java.io.PrintStream;
@@ -33,14 +31,15 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 public class StdoutSink implements SinkConnector<String> {
-
+    private static final long serialVersionUID = -5695163797621079645L;
     private String outputFormat;
     private AtomicLong linesReceived;
     private PrintStream stream = System.out;
 
-    @Override
-    public void initialize(ConnectorContext ctx) {
-        // nothing really
+    public StdoutSink(String outputFormat) {
+        this.outputFormat = outputFormat;
+        stream = System.out;
+        linesReceived = new AtomicLong(0);
     }
 
     @Override
@@ -60,13 +59,6 @@ public class StdoutSink implements SinkConnector<String> {
     @Override
     public void flush() throws Exception {
         stream.flush();
-    }
-
-    @Override
-    public void open(Config config) throws Exception {
-        outputFormat = config.getString(ConfigKeys.OUTPUT_FORMAT_KEY, ConfigKeys.DEFAULT_OUTPUT_FORMAT);
-        stream = System.out;
-        linesReceived = new AtomicLong(0);
     }
 
     @Override

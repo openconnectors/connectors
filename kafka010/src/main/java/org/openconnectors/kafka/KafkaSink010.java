@@ -72,14 +72,6 @@ public class KafkaSink010<K, V> implements SinkConnector<KeyValue<K, V>> {
         return KafkaConfig.KAFKA_CONNECTOR_VERSION;
     }
 
-    @Override
-    public void initialize(ConnectorContext ctx) {
-    }
-
-    @Override
-    public void open() {
-    }
-
     private KafkaSink010(Builder builder) {
         topic = builder.topic;
         producer = new KafkaProducer<>(builder.props);
