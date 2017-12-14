@@ -19,10 +19,9 @@
 
 package org.openconnectors.util;
 
-import org.openconnectors.config.Config;
 import org.openconnectors.connect.ConnectorContext;
-import org.openconnectors.connect.PushSourceConnector;
 import org.openconnectors.connect.PullSourceConnector;
+import org.openconnectors.connect.PushSourceConnector;
 
 import java.util.Collection;
 import java.util.LinkedList;

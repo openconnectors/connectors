@@ -29,7 +29,6 @@ import com.twitter.hbc.httpclient.BasicClient;
 import com.twitter.hbc.httpclient.auth.Authentication;
 import com.twitter.hbc.httpclient.auth.OAuth1;
 import org.openconnectors.connect.Connector;
-import org.openconnectors.connect.ConnectorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-import static org.openconnectors.twitter.TwitterFireHoseConfig.CLIENT_BUFFER_SIZE;
 import static org.openconnectors.twitter.TwitterFireHoseConfig.Defaults;
 import static org.openconnectors.twitter.TwitterFireHoseConfig.TWITTER_CONNECTOR_VERION;
 
@@ -54,10 +52,6 @@ public class TwitterFireHose implements Connector {
     private final Object waitObject;
     private final Consumer<Collection<String>> consumeFunction;
     private final int clientBufferSize;
-
-    @Override
-    public void initialize(ConnectorContext ctx) {
-    }
 
     @Override
     public void close() throws Exception {
@@ -155,6 +149,10 @@ public class TwitterFireHose implements Connector {
         synchronized (waitObject) {
             waitObject.notify();
         }
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
     }
 
     private TwitterFireHose(Builder builder) {

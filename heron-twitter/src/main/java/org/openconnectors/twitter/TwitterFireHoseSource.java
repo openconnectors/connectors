@@ -19,22 +19,8 @@
 
 package org.openconnectors.twitter;
 
-import com.twitter.heron.streamlet.Builder;
-import com.twitter.heron.streamlet.Config;
-import com.twitter.heron.streamlet.Runner;
-
 /**
- * Basic topology to copy data fro stdin to std out, useful for experimentation
+ * Simple Push based Twitter FireHose Source (TODO)
  */
-public final class TwitterFireHoseTopology {
-
-    private TwitterFireHoseTopology() {
-    }
-
-    public static void main(String[] args) throws Exception {
-        Builder processingGraphBuilder = Builder.createBuilder();
-        processingGraphBuilder.newSource(new TwitterFireHoseStreamlet()).log();
-        Config config = Config.defaultConfig();
-        new Runner().run("TwitterFireHose", config, processingGraphBuilder);
-    }
+public class TwitterFireHoseSource {
 }

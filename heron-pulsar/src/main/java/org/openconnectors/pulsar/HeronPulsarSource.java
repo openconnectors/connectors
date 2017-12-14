@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 
 public class HeronPulsarSource implements Source<byte[]> {
+    private static final long serialVersionUID = 8788120217637870936L;
     private static final Logger LOG = LoggerFactory.getLogger(HeronPulsarSource.class);
     private PulsarSource pulsarSource;
     private PullWrapperOnPushSource<byte[]> pullHose;
