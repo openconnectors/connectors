@@ -20,11 +20,10 @@
 package org.openconnectors;
 
 import org.openconnectors.config.Config;
-import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PushSourceConnector;
 import org.openconnectors.data.Record;
-import org.openconnectors.source.BulkJdbcQuerier;
 import org.openconnectors.source.AutoIncrementingJdbcQuerier;
+import org.openconnectors.source.BulkJdbcQuerier;
 import org.openconnectors.source.QuerierThread;
 import org.openconnectors.source.TableQuerier;
 import org.openconnectors.util.CachedConnectionProvider;
@@ -45,7 +44,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 public class JdbcSourceConnector implements PushSourceConnector<Record> {
-
+    private static final long serialVersionUID = -3582091929013927187L;
     private static Logger logger = LoggerFactory.getLogger(JdbcSourceConnector.class);
 
     private Config config;
@@ -53,25 +52,12 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
     private List<QuerierThread> workers = new ArrayList<>();
     private Consumer<Collection<Record>> consumeFunction;
 
-    private void configureConnector(Config config) {
-        // TODO: validate config
-        this.config = config;
-    }
-
-
-    @Override
-    public void initialize(ConnectorContext ctx) {
-
-    }
-
-    @Override
-    public void open(Config config) throws Exception {
-        configureConnector(config);
-        final String dbUrl = config.getString(JdbcConfigKeys.CONNECTION_URL_CONFIG);
-        final String dbUser = config.getString(JdbcConfigKeys.CONNECTION_USER_CONFIG);
-        final String dbPassword = config.getString(JdbcConfigKeys.CONNECTION_PASSWORD_CONFIG);
-        final int dbMaxConnectionAttempts = config.getInt(JdbcConfigKeys.CONNECTION_MAX_ATTEMPT);
-        final int dbConnectionRetryDelay = config.getInt(JdbcConfigKeys.CONNECTION_RETRY_DELAY);
+    public void start() throws Exception {
+        final String dbUrl = config.getString(JdbcConfig.Keys.CONNECTION_URL_CONFIG);
+        final String dbUser = config.getString(JdbcConfig.Keys.CONNECTION_USER_CONFIG);
+        final String dbPassword = config.getString(JdbcConfig.Keys.CONNECTION_PASSWORD_CONFIG);
+        final int dbMaxConnectionAttempts = config.getInt(JdbcConfig.Keys.CONNECTION_MAX_ATTEMPT);
+        final int dbConnectionRetryDelay = config.getInt(JdbcConfig.Keys.CONNECTION_RETRY_DELAY);
         final DbConnectionConfig connectionConfig = DbConnectionConfig.Builder
                 .newBuilder()
                 .setUrl(dbUrl)
@@ -84,15 +70,15 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
 
         Connection connection = connectionProvider.getValidConnection();
 
-        Map<String, List<String>> whiteListTables = getTablesAndColumns(JdbcConfigKeys.WHITE_LIST_TABLES);
-        Map<String, List<String>> blackListTables = getTablesAndColumns(JdbcConfigKeys.BLACK_LIST_TABLES);
+        Map<String, List<String>> whiteListTables = getTablesAndColumns(JdbcConfig.Keys.WHITE_LIST_TABLES);
+        Map<String, List<String>> blackListTables = getTablesAndColumns(JdbcConfig.Keys.BLACK_LIST_TABLES);
         if (!whiteListTables.isEmpty() && !blackListTables.isEmpty()) {
             String errorMsg = "Specify either \"white.list.tables\" or \"black.list.tables\", but not both";
             logger.error(errorMsg);
             throw new RuntimeException(errorMsg);
         }
         Map<String, List<String>> tables = new HashMap<>();
-        String schemaPattern = this.config.getString(JdbcConfigKeys.SCHEMA_PATTERN);
+        String schemaPattern = this.config.getString(JdbcConfig.Keys.SCHEMA_PATTERN);
         // TODO: handle types[] parameter
         ResultSet tablesResultSet = connection.getMetaData().getTables(null, schemaPattern, "%", null);
         final int tableNameColumnIndex = 3;
@@ -117,16 +103,16 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                 .filter(tableName -> !blackListTables.containsKey(tableName))
                 .forEach(tableName -> filteredTables.put(tableName, null));
         }
-        String mode = this.config.getString(JdbcConfigKeys.MODE);
+        String mode = this.config.getString(JdbcConfig.Keys.MODE);
         Map<String, String> tableIncrementingColumnNames = new HashMap<>();
-        if (mode.equals(JdbcConfigKeys.INCREMENTING_MODE)) {
-            String configLine = this.config.getString(JdbcConfigKeys.INCREMENTING_COLUMN_NAME);
+        if (mode.equals(JdbcConfig.Keys.INCREMENTING_MODE)) {
+            String configLine = this.config.getString(JdbcConfig.Keys.INCREMENTING_COLUMN_NAME);
             tableIncrementingColumnNames = JdbcUtils.parseIncrementingColumns(configLine);
         }
         List<TableQuerier> tableQueriers = new ArrayList<>();
         for (String tableName : filteredTables.keySet()) {
             switch (mode) {
-                case JdbcConfigKeys.BULK_MODE:
+                case JdbcConfig.Keys.BULK_MODE:
                     tableQueriers.add(
                             new BulkJdbcQuerier(
                                     getConnectionProvider(connectionConfig),
@@ -135,7 +121,7 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
                                     filteredTables.get(tableName))
                     );
                     break;
-                case JdbcConfigKeys.INCREMENTING_MODE:
+                case JdbcConfig.Keys.INCREMENTING_MODE:
                     tableQueriers.add(
                             new AutoIncrementingJdbcQuerier(
                                     getConnectionProvider(connectionConfig),
@@ -152,7 +138,7 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
         }
         for(TableQuerier tableQuerier : tableQueriers) {
             QuerierThread querierThread = new QuerierThread(tableQuerier,
-                                                            config.getLong(JdbcConfigKeys.TABLE_CHECK_PERIOD),
+                                                            config.getLong(JdbcConfig.Keys.TABLE_CHECK_PERIOD),
                                                             consumeFunction);
             querierThread.start();
             workers.add(querierThread);
@@ -181,9 +167,9 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
             return new HashMap<>(0);
         }
         switch (tableConfigKey) {
-            case JdbcConfigKeys.BLACK_LIST_TABLES:
+            case JdbcConfig.Keys.BLACK_LIST_TABLES:
                 return JdbcUtils.parseBlackListTables(configLine);
-            case JdbcConfigKeys.WHITE_LIST_TABLES:
+            case JdbcConfig.Keys.WHITE_LIST_TABLES:
                 return JdbcUtils.parseWhiteListTablesAndColumns(configLine);
             default:
                 return new HashMap<>(0);
@@ -194,5 +180,26 @@ public class JdbcSourceConnector implements PushSourceConnector<Record> {
         ConnectionProvider connectionProvider = new CachedConnectionProvider(connectionConfig);
         connectionProviders.add(connectionProvider);
         return connectionProvider;
+    }
+
+    private JdbcSourceConnector(Builder builder) {
+        config = builder.config;
+    }
+
+    public static class Builder {
+        private Config config;
+
+        public Builder withConfig(Config config) {
+            this.config = config;
+            return this;
+        }
+
+        public JdbcSourceConnector build() {
+            if (config == null) {
+                throw new IllegalArgumentException("You must provide a config using the withConfig method");
+            }
+
+            return new JdbcSourceConnector(this);
+        }
     }
 }

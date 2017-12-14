@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class StdinSource implements PullSourceConnector<String> {
     private static final long serialVersionUID = -4732735740164679975L;
-    private static final Logger LOG = LoggerFactory.getLogger(StdinSource.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(StdinSource.class);
 
     private InputStream stream;
     private InputStreamReader streamReader;

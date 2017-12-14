@@ -43,7 +43,7 @@ import java.util.Properties;
  */
 public class KafkaSource010<V> implements PushSourceConnector<V> {
     private static final long serialVersionUID = -6255843583086784051L;
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSource010.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaSource010.class);
     private final String topic;
     private final boolean autoCommitEnabled;
     private final Properties props;
@@ -115,54 +115,54 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
         private Properties props;
         private java.util.function.Consumer<Collection<V>> consumeFunction;
 
-        private Builder() {
+        public Builder() {
             autoCommitEnabled = KafkaConfig.Defaults.AUTO_COMMIT_ENABLED;
             props = new Properties();
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KafkaConfig.Defaults.KEY_SERIALIZER_CLASS);
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaConfig.Defaults.VALUE_SERIALIZER_CLASS);
         }
 
-        public Builder setTopic(String topic) {
+        public Builder<V> setTopic(String topic) {
             this.topic = topic;
             return this;
         }
 
-        public Builder setBootstrapServers(String bootstrapServers) {
+        public Builder<V> setBootstrapServers(String bootstrapServers) {
             props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
             return this;
         }
 
-        public Builder setGroupId(String groupId) {
+        public Builder<V> setGroupId(String groupId) {
             props.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
             return this;
         }
 
-        public Builder setAutoCommitEnabled(boolean autoCommitEnabled) {
+        public Builder<V> setAutoCommitEnabled(boolean autoCommitEnabled) {
             this.autoCommitEnabled = autoCommitEnabled;
             return this;
         }
 
-        public Builder setMinBytes(int minBytes) {
+        public Builder<V> setMinBytes(int minBytes) {
             props.put(ConsumerConfig.FETCH_MIN_BYTES_CONFIG, minBytes);
             return this;
         }
 
-        public Builder setAutoCommitIntervalMillis(long autoCommitIntervalMillis) {
+        public Builder<V> setAutoCommitIntervalMillis(long autoCommitIntervalMillis) {
             props.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, autoCommitIntervalMillis);
             return this;
         }
 
-        public Builder setSessionTimeoutMillis(long sessionTimeoutMillis) {
+        public Builder<V> setSessionTimeoutMillis(long sessionTimeoutMillis) {
             props.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, sessionTimeoutMillis);
             return this;
         }
 
-        public Builder setConsumeFunction(java.util.function.Consumer<Collection<V>> consumeFunction) {
+        public Builder<V> setConsumeFunction(java.util.function.Consumer<Collection<V>> consumeFunction) {
             this.consumeFunction = consumeFunction;
             return this;
         }
 
-        public Builder usingConfigProvider(Config config) {
+        public Builder<V> usingConfigProvider(Config config) {
             config.verify(
                     KafkaConfig.Keys.KAFKA_SOURCE_TOPIC,
                     KafkaConfig.Keys.KAFKA_SOURCE_GROUP_ID,
@@ -174,7 +174,7 @@ public class KafkaSource010<V> implements PushSourceConnector<V> {
             return this;
         }
 
-        public KafkaSource010 build() {
+        public KafkaSource010<V> build() {
             Arrays.asList(
                     ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
                     ConsumerConfig.GROUP_ID_CONFIG,

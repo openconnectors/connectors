@@ -26,7 +26,6 @@ import com.aerospike.client.Key;
 import com.aerospike.client.Value;
 import com.aerospike.client.policy.ClientPolicy;
 import com.aerospike.client.policy.WritePolicy;
-import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 import org.openconnectors.util.KeyValue;
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ import static org.openconnectors.aerospike.AeroSpikeConfig.Defaults;
  */
 public class AeroSpikeSink<K, V> implements SinkConnector<KeyValue<K, V>> {
     private static final long serialVersionUID = 6387089772307974259L;
-    private static final Logger LOG = LoggerFactory.getLogger(AeroSpikeSink.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(AeroSpikeSink.class);
     private final String keyspace, columnName, keySet;
     private final WritePolicy writePolicy;
     private AerospikeClient client;

@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 
 public class PulsarSource implements PushSourceConnector<byte[]> {
     private static final long serialVersionUID = 2611918383355492860L;
-    private static final Logger LOG = LoggerFactory.getLogger(PulsarSource.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(PulsarSource.class);
     private final String topic;
     private final String brokerUrl;
     private final String subscription;

@@ -41,7 +41,7 @@ import java.util.concurrent.CompletableFuture;
  */
 public class KafkaSink010<K, V> implements SinkConnector<KeyValue<K, V>> {
     private static final long serialVersionUID = 1858275615268645616L;
-    private static final Logger LOG = LoggerFactory.getLogger(KafkaSink010.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(KafkaSink010.class);
     private final String topic;
     private Producer<K, V> producer;
 
