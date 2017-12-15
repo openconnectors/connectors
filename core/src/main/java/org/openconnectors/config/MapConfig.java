@@ -20,17 +20,18 @@
 package org.openconnectors.config;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 public class MapConfig implements Config {
 
-    final HashMap<String, Object> properties;
+    final Map<String, Object> properties;
 
     public MapConfig(){
         properties = new HashMap<>();
     }
 
-    public MapConfig(final HashMap<String, Object> props){
+    public MapConfig(final Map<String, Object> props){
         properties = props;
     }
 
@@ -99,11 +100,8 @@ public class MapConfig implements Config {
         return (getObject(propertyName) != null) ? getObject(propertyName) : defaultValue;
     }
 
-    private static boolean isNull(String propertyName, HashMap<String, Object> properties) {
-        if(properties == null || propertyName == null || properties.containsKey(propertyName) == false){
-            return true;
-        }
-        return false;
+    private static boolean isNull(String propertyName, Map<String, Object> properties) {
+        return (properties == null || propertyName == null || !properties.containsKey(propertyName));
     }
 
     @Override

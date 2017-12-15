@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TableMetaData {
-
     private String tableName;
     private int columnsCount;
     private Map<String, Column> columnsByName;

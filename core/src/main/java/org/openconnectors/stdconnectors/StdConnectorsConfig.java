@@ -17,24 +17,16 @@
  * under the License.
  */
 
-package org.openconnectors.twitter;
+package org.openconnectors.stdconnectors;
 
-import org.openconnectors.config.ConfigProvider;
-import org.openconnectors.stdconnectors.StdoutSink;
-import org.openconnectors.util.SimpleCopier;
+class StdConnectorsConfig {
+    static final String STD_CONNECTORS_VERSION = "0.0.1";
 
-/**
- * Basic topology to copy data from Twitter firehouse to std out, useful for experimentation
- */
-public class TwitterFireHoseToStdOutCopier extends SimpleCopier<String, String> {
-
-    public TwitterFireHoseToStdOutCopier() {
-        super(new TwitterFireHose(), new StdoutSink(), x -> x);
+    static final class Defaults {
+        static final String OUTPUT_FORMAT = "[%s] %s";
     }
 
-    public static void main(String[] args) throws Exception {
-        TwitterFireHoseToStdOutCopier instance = new TwitterFireHoseToStdOutCopier();
-        instance.setup(new ConfigProvider());
-        instance.run();
+    static final class Keys {
+        static final String OUTPUT_FORMAT_KEY = "std.out.format";
     }
 }

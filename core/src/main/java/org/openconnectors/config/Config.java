@@ -42,4 +42,11 @@ public interface Config {
 
     Set<String> getPropertyKeys();
 
+    default void verify(String... keys) {
+        for (String key : keys) {
+            if (getString(key) == null) {
+                throw new IllegalArgumentException(String.format("Required property %s not set", key));
+            }
+        }
+    }
 }

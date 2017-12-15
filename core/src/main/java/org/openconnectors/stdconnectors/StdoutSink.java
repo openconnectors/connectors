@@ -20,7 +20,6 @@
 package org.openconnectors.stdconnectors;
 
 import org.openconnectors.config.Config;
-import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.SinkConnector;
 
 import java.io.PrintStream;
@@ -33,40 +32,40 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 public class StdoutSink implements SinkConnector<String> {
-
+    private static final long serialVersionUID = -5695163797621079645L;
     private String outputFormat;
-    private AtomicLong linesReceived;
+    private AtomicLong linesReceived  = new AtomicLong(0);
     private PrintStream stream = System.out;
 
-    @Override
-    public void initialize(ConnectorContext ctx) {
-        // nothing really
+    public StdoutSink() {
+        this.outputFormat = StdConnectorsConfig.Defaults.OUTPUT_FORMAT;
+    }
+
+    public StdoutSink(String outputFormat) {
+        this.outputFormat = outputFormat;
+    }
+
+    private void receiveMessage(String message) {
+        long id = linesReceived.incrementAndGet();
+        linesReceived.incrementAndGet();
+        final String output = String.format(
+                outputFormat,
+                id,
+                message
+        );
+        stream.print(output);
     }
 
     @Override
     public CompletableFuture<Void> publish(Collection<String> messages) {
         return CompletableFuture.runAsync(() -> {
-            for(String message : messages){
-                long id = linesReceived.incrementAndGet();
-                final String output = String.format(
-                        outputFormat,
-                        id,
-                        message);
-                stream.println(output);
-            }
+            messages.stream().forEach(msg -> receiveMessage(msg));
         });
     }
 
     @Override
     public void flush() throws Exception {
         stream.flush();
-    }
-
-    @Override
-    public void open(Config config) throws Exception {
-        outputFormat = config.getString(ConfigKeys.OUTPUT_FORMAT_KEY, ConfigKeys.DEFAULT_OUTPUT_FORMAT);
-        stream = System.out;
-        linesReceived = new AtomicLong(0);
     }
 
     @Override
@@ -77,6 +76,39 @@ public class StdoutSink implements SinkConnector<String> {
 
     @Override
     public String getVersion() {
-        return StdStreamConVer.getVersion();
+        return StdConnectorsConfig.STD_CONNECTORS_VERSION;
+    }
+
+    private StdoutSink(Builder builder) {
+        outputFormat = builder.outputFormat;
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String outputFormat;
+
+        private Builder() {
+            outputFormat = StdConnectorsConfig.Defaults.OUTPUT_FORMAT;
+        }
+
+        public Builder withOutputFormat(String outputFormat) {
+            this.outputFormat = outputFormat;
+            return this;
+        }
+
+        public Builder usingConfigProvider(Config config) {
+            config.verify(
+                    StdConnectorsConfig.Keys.OUTPUT_FORMAT_KEY
+            );
+            outputFormat = config.getString(StdConnectorsConfig.Keys.OUTPUT_FORMAT_KEY);
+            return this;
+        }
+
+        public StdoutSink build() {
+            return new StdoutSink(this);
+        }
     }
 }

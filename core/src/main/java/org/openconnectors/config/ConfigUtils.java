@@ -1,10 +1,13 @@
 package org.openconnectors.config;
 
-public class ConfigUtils {
+import java.util.Map;
 
-    public static void verifyExists(final Config config, final String key) {
-        if (config.getString(key) == null) {
-            throw new IllegalArgumentException("Required property '" + key + "' not set.");
-        }
+public class ConfigUtils {
+    public static void validate(Map<String, Object> paramMap) {
+        paramMap.forEach((name, param) -> {
+            if (null == param) {
+                throw new IllegalArgumentException(String.format("The param %s cannot be null", name));
+            }
+        });
     }
 }

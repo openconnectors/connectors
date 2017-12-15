@@ -10,21 +10,18 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 
 public class HeronKafka010Source<V> implements Source<V> {
-
+    private static final long serialVersionUID = 580161852955738222L;
     private static final Logger LOG = LoggerFactory.getLogger(HeronKafka010Source.class);
     private PullWrapperOnPushSource<V> pullHose;
 
     @Override
     public void setup(Context context) {
         if (pullHose == null) {
-            KafkaSource010<V> kafkaSource = new KafkaSource010<>();
+            KafkaSource010<V> kafkaSource = new KafkaSource010.Builder<V>()
+                    .usingConfigProvider(new ConfigProvider())
+                    .build();
             pullHose = new PullWrapperOnPushSource<> (kafkaSource, 1024 * 1024,
                 PullWrapperOnPushSource.BufferStrategy.BLOCK);
-        }
-        try {
-            pullHose.open(new ConfigProvider());
-        } catch (Exception e) {
-            throw new RuntimeException("Exception during setup of Kafka Source", e);
         }
     }
 

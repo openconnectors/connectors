@@ -19,14 +19,12 @@
 
 package org.openconnectors.connect;
 
-import org.openconnectors.config.Config;
-
 import java.io.Serializable;
 
 /**
  * Connector component base abstract class
- * The lifcycle of a connector is to initialize with a connector context
- * open it for processing and then close it at the end of the session
+ * The lifecycle of a connector is to initialize with a connector context,
+ * open it for processing, and then close it at the end of the session
  */
 public interface Connector extends AutoCloseable, Versionable, Serializable {
     /**
@@ -34,13 +32,9 @@ public interface Connector extends AutoCloseable, Versionable, Serializable {
      *
      * @param ctx Connector context for distributed runtimes
      */
-    void initialize(final ConnectorContext ctx);
+    default void initialize(final ConnectorContext ctx) {
+    }
 
-    /**
-     * Open connector with configuration
-     *
-     * @param config initialization config
-     * @throws Exception IO type exceptions when opening a connector
-     */
-    void open(final Config config) throws Exception;
+    default void start() throws Exception {
+    }
 }

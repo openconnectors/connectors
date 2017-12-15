@@ -51,12 +51,18 @@ public class DbConnectionConfig {
         return connectionRetryDelay;
     }
 
-    public static class Builder {
+    public static final class Builder {
         private String url;
         private String user;
         private String password;
         private int maxConnectionAttempts;
         private int connectionRetryDelay;
+
+        private static void require(boolean condition, String errorMessage) {
+            if (!condition) {
+                throw new DbConnectionConfigException(errorMessage);
+            }
+        }
 
         private Builder() {
         }
@@ -66,17 +72,19 @@ public class DbConnectionConfig {
         }
 
         public Builder setUrl(String url) {
-            if (url == null || url.isEmpty()) {
-                throw new DbConnectionConfigException("URL parameter cannot be null or empty.");
-            }
+            require(
+                    url == null || url.isEmpty(),
+                    "The url parameter cannot be null or empty"
+            );
             this.url = url.trim();
             return this;
         }
 
         public Builder setUser(String user) {
-            if (user == null || user.isEmpty()) {
-                throw new DbConnectionConfigException("user parameter cannot be null or empty.");
-            }
+            require(
+                    user == null || user.isEmpty(),
+                    "The user parameter cannot be null or empty"
+            );
             this.user = user;
             return this;
         }
@@ -87,17 +95,19 @@ public class DbConnectionConfig {
         }
 
         public Builder setMaxConnectionAttempts(int maxConnectionAttempts) {
-            if (maxConnectionAttempts < 1) {
-                throw new DbConnectionConfigException("maxConnectionAttempts parameter cannot be less than 1");
-            }
+            require(
+                    maxConnectionAttempts < 1,
+                    "The maxConnectionAttempts parameter cannot be less than 1"
+            );
             this.maxConnectionAttempts = maxConnectionAttempts;
             return this;
         }
 
         public Builder setConnectionRetryDelay(int connectionRetryDelay) {
-            if (connectionRetryDelay < 0) {
-                throw new DbConnectionConfigException("connectionRetryDelay parameter cannot be negative.");
-            }
+            require(
+                    connectionRetryDelay < 0,
+                    "The connectionRetryDelay parameter cannot be negative"
+            );
             this.connectionRetryDelay = connectionRetryDelay;
             return this;
         }

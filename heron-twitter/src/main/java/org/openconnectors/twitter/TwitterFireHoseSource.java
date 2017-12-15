@@ -17,12 +17,10 @@
  * under the License.
  */
 
-package org.openconnectors.stdconnectors;
+package org.openconnectors.twitter;
 
-public class ConfigKeys {
-
-    public static final String DEFAULT_OUTPUT_FORMAT = "[%s] %s";
-    public static final String OUTPUT_FORMAT_KEY = "std.out.format";
-
-    private ConfigKeys() {}
+/**
+ * Simple Push based Twitter FireHose Source (TODO)
+ */
+public class TwitterFireHoseSource {
 }

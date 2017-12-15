@@ -19,8 +19,6 @@
 
 package org.openconnectors.stdconnectors;
 
-import org.openconnectors.config.Config;
-import org.openconnectors.connect.ConnectorContext;
 import org.openconnectors.connect.PullSourceConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,7 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  */
 public class StdinSource implements PullSourceConnector<String> {
-
+    private static final long serialVersionUID = -4732735740164679975L;
     private static final Logger LOG = LoggerFactory.getLogger(StdinSource.class);
 
     private InputStream stream;
@@ -45,13 +43,7 @@ public class StdinSource implements PullSourceConnector<String> {
     private BufferedReader bufferedReader;
     private AtomicLong linesRead;
 
-    @Override
-    public void initialize(ConnectorContext ctx) {
-        // nothing really
-    }
-
-    @Override
-    public void open(Config config) throws Exception {
+    public StdinSource() {
         stream = System.in;
         streamReader = new InputStreamReader(stream);
         bufferedReader = new BufferedReader(streamReader);
@@ -81,6 +73,6 @@ public class StdinSource implements PullSourceConnector<String> {
 
     @Override
     public String getVersion() {
-        return StdStreamConVer.getVersion();
+        return StdConnectorsConfig.STD_CONNECTORS_VERSION;
     }
 }
