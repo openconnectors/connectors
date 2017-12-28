@@ -19,6 +19,7 @@
 
 package org.openconnectors.source;
 
+import org.openconnectors.data.ColumnType;
 import org.openconnectors.data.Record;
 import org.openconnectors.data.TableMetaData;
 import org.openconnectors.util.ConnectionProvider;
@@ -90,32 +91,32 @@ public abstract class TableQuerier {
                 new TableMetaData.TableMetaDataBuilder(this.tableName, columnCount);
         for (int i = 1; i <= columnCount; i++) {
             String columnName = resultSetMetaData.getColumnName(i);
-            TableMetaData.ColumnType type = null;
+            ColumnType type = null;
             switch (resultSetMetaData.getColumnType(i)) {
                 case Types.BIT:
-                    type = TableMetaData.ColumnType.BOOLEAN;
+                    type = ColumnType.BOOLEAN;
                     break;
                 case Types.TINYINT:
-                    type = TableMetaData.ColumnType.BYTE;
+                    type = ColumnType.BYTE;
                     break;
                 case Types.SMALLINT:
-                    type = TableMetaData.ColumnType.SHORT;
+                    type = ColumnType.SHORT;
                     break;
                 case Types.INTEGER:
-                    type = TableMetaData.ColumnType.INT;
+                    type = ColumnType.INT;
                     break;
                 case Types.BIGINT:
-                    type = TableMetaData.ColumnType.LONG;
+                    type = ColumnType.LONG;
                     break;
                 case Types.FLOAT:
                 case Types.REAL:
-                    type = TableMetaData.ColumnType.FLOAT;
+                    type = ColumnType.FLOAT;
                     break;
                 case Types.DOUBLE:
-                    type = TableMetaData.ColumnType.DOUBLE;
+                    type = ColumnType.DOUBLE;
                     break;
                 case Types.NUMERIC:
-                    type = TableMetaData.ColumnType.BIG_DECIMAL;
+                    type = ColumnType.BIG_DECIMAL;
                     break;
                 case Types.CHAR:
                 case Types.LONGNVARCHAR:
@@ -123,25 +124,25 @@ public abstract class TableQuerier {
                 case Types.VARCHAR:
                 case Types.NCHAR:
                 case Types.NVARCHAR:
-                    type = TableMetaData.ColumnType.STRING;
+                    type = ColumnType.STRING;
                     break;
                 case Types.DATE:
-                    type = TableMetaData.ColumnType.DATE;
+                    type = ColumnType.DATE;
                     break;
                 case Types.TIME:
-                    type = TableMetaData.ColumnType.TIME;
+                    type = ColumnType.TIME;
                     break;
                 case Types.TIMESTAMP:
-                    type = TableMetaData.ColumnType.TIMESTAMP;
+                    type = ColumnType.TIMESTAMP;
                     break;
                 case Types.BLOB:
-                    type = TableMetaData.ColumnType.BLOB;
+                    type = ColumnType.BLOB;
                     break;
                 case Types.CLOB:
-                    type = TableMetaData.ColumnType.CLOB;
+                    type = ColumnType.CLOB;
                     break;
                 case Types.REF:
-                    type = TableMetaData.ColumnType.REF;
+                    type = ColumnType.REF;
                     break;
                 // TODO: handle other types
                 default:
