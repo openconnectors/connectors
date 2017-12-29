@@ -79,28 +79,31 @@ subprojects {
 		description "Generates pom.xml"
 		pom {
 			project {
+				url 'https://github.com/openconnectors/connectors'
 				groupId project.group
 				artifactId 'connector' + '-' + project.name
 				version project.version
 				packaging 'jar'
-			}
-		}.withXml {
-			def dependenciesNode = asNode().appendNode('dependencies')
-			configurations.compile.allDependencies.each { dependency ->
-				def dependencyNode = dependenciesNode.appendNode('dependency')
-				dependencyNode.appendNode('groupId', dependency.group)
-				dependencyNode.appendNode('artifactId', dependency.name)
-				dependencyNode.appendNode('version', dependency.version)
-
-				// for exclusions
-				if (dependency.excludeRules.size() > 0) {
-					def exclusions = dependencyNode.appendNode('exclusions')
-					dependency.excludeRules.each { ExcludeRule ex ->
-						def exclusion = exclusions.appendNode('exclusion')
-						exclusion.appendNode('groupId', ex.group)
-						exclusion.appendNode('artifactId', ex.module)
-					}
-				}
+				name artifactId
+				description "Open Connector component"
+				inceptionYear '2017'
+            	licenses {
+                	license {
+                    	name 'The Apache Software License, Version 2.0'
+                    	url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    	distribution 'repo'
+                	}
+            	}
+            	developers {
+        			developer {
+            			id 'Ali Ahmed'
+            			email 'alahmed.se@gmail.com'
+        			}
+    			}
+    			scm {
+       				connection 'git@github.com:openconnectors/connectors.git'
+        			url 'https://github.com/openconnectors/connectors'
+    			}
 			}
 		}.writeTo("$buildDir/pom.xml")
 	}
