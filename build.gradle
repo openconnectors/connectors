@@ -25,7 +25,7 @@ subprojects {
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
 
-    group   = 'org.openconnectors.connectors'
+    group   = 'io.github.openconnectors'
     version = System.env['CONNECTOR_VERION'] ?: '0.0.' + getVersionTag()
 
 	repositories {
