@@ -136,6 +136,13 @@ project(':jdbc') {
 	}
 }
 
+//RabbitMQ
+project(':rabbitmq') {
+	dependencies {
+		compile project(':core')
+	}
+}
+
 //Twitter
 project(':twitter') {
 	dependencies {
