@@ -6,8 +6,6 @@ allprojects {
 
 }
 
-ext.heronVersion = "0.17.0"
-
 subprojects {
 
 	def getVersionTag = { ->
@@ -25,7 +23,7 @@ subprojects {
 	sourceCompatibility = 1.8
 	targetCompatibility = 1.8
 
-    group   = 'org.openconnectors.connectors'
+    group   = 'io.github.openconnectors'
     version = System.env['CONNECTOR_VERION'] ?: '0.0.' + getVersionTag()
 
 	repositories {
@@ -178,70 +176,6 @@ project(':s3') {
     }
 }
 
-//Heron Kafka
-project(':heron-kafka010') {
-	dependencies {
-		compile project(':core')
-		compile project(':kafka010')
-	}
-}
-
-//Heron Pulsar
-project(':heron-pulsar') {
-	dependencies {
-		compile project(':core')
-		compile project(':pulsar')
-	}
-}
-
-//Heron Aerospike
-project(':heron-aerospike') {
-	dependencies {
-		compile project(':core')
-		compile project(':aerospike')
-	}
-}
-
-//Heron Cassandra
-project(':heron-cassandra') {
-	dependencies {
-		compile project(':core')
-		compile project(':cassandra')
-	}
-}
-
-//Heron JDBC
-project(':heron-jdbc') {
-	dependencies {
-		compile project(':core')
-		compile project(':jdbc')
-	}
-}
-
-//Heron Twitter
-project(':heron-twitter') {
-	dependencies {
-		compile project(':core')
-		compile project(':twitter')
-	}
-}
-
-//Heron ElasticSearch
-project(':heron-elasticsearch5') {
-	dependencies {
-		compile project(':core')
-		compile project(':elasticsearch5')
-	}
-}
-
-//Heron S3
-project(':s3') {
-    dependencies {
-        compile project(':core')
-    }
-}
-
-
 //Examples local jvm
 project(':examples') {
 	dependencies {
@@ -252,17 +186,4 @@ project(':examples') {
 		compile project(':kafka010')
 		compile project(':pulsar')
 	}
-}
-
-//Examples heron toplogies
-project(':examples-heron') {
-    dependencies {
-    	compile project(':heron-kafka010')
-    	compile project(':heron-pulsar')
-    	compile project(':heron-cassandra')
-    	compile project(':heron-elasticsearch5')
-    	compile project(':heron-aerospike')
-    	compile project(':heron-jdbc')
-    	compile project(':heron-twitter')
-    }
 }
