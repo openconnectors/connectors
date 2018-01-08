@@ -19,7 +19,33 @@
 
 package org.openconnectors.connect;
 
+import org.openconnectors.connect.Schema.SchemaManager;
+import org.openconnectors.connect.events.Listener;
+import org.openconnectors.connect.events.SendableEvent;
+
+import java.util.UUID;
+
 public interface ConnectorContext {
-    String getConnectorId();
-    String getSessionId();
+
+    // State Manager for state coordination, dedup and ordering semantics
+    StateManager getStateManageger();
+
+    // Globally unique connector instance identifier
+    UUID getConnectorId();
+
+    // Partition Id for this context
+    int getPartitionId();
+
+    // Expected total instances of this connector type currently active
+    int getInstanceCount();
+
+    // Notifying the external runtime of metrics and other related events
+    Integer publishEvent(SendableEvent event);
+
+    // Receiving events from an external manager post initialization
+    // ie: dynamic reconfiguration
+    void subscribeToEvents(Listener listener);
+
+    // Get schema manager
+    SchemaManager getSchemaManager();
 }
