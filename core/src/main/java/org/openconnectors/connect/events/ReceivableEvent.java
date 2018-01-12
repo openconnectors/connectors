@@ -19,5 +19,8 @@
 
 package org.openconnectors.connect.events;
 
+/**
+ * Event object that can be accepted by a connector instance
+ */
 public interface ReceivableEvent extends Event {
 }

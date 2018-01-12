@@ -21,5 +21,5 @@ package org.openconnectors.connect.events;
 
 public interface Listener {
 
-    void recievEvent(Event event);
+    void receiveEvent(Event event);
 }

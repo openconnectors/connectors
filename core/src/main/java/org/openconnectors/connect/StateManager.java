@@ -21,7 +21,15 @@ package org.openconnectors.connect;
 
 import java.util.Map;
 
+/**
+ * This class represents a state manager client
+ */
 public interface StateManager {
 
+    /**
+     * Map interface to gloabl state manger
+     *
+     * @return client map for global state
+     */
     Map<String, Object> getState();
 }

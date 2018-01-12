@@ -19,5 +19,8 @@
 
 package org.openconnectors.connect.events;
 
-public interface SendableEvent extends Event{
+/**
+ * Event object that can be sent by a connector instance
+ */
+public interface SendableEvent extends Event {
 }

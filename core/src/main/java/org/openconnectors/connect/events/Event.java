@@ -19,6 +19,9 @@
 
 package org.openconnectors.connect.events;
 
+/**
+ * Interace for Event objects to interact with a connecotr instance
+ */
 public interface Event {
 
 }

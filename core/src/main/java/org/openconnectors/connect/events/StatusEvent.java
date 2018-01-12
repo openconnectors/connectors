@@ -20,6 +20,7 @@
 package org.openconnectors.connect.events;
 
 public interface StatusEvent {
+
     String getStatusType();
     int getPriority();
     String getStatus();
