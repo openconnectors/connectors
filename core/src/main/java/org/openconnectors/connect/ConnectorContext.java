@@ -19,7 +19,66 @@
 
 package org.openconnectors.connect;
 
+import org.openconnectors.connect.Schema.SchemaManager;
+import org.openconnectors.connect.events.Listener;
+import org.openconnectors.connect.events.SendableEvent;
+
+import java.util.UUID;
+
+/**
+ * ConnectorContext is a construct provided to each connector instance to abstract away the underlying runtime
+ * capabilities provided are a state manager, partition management, schema registry interaction etc.
+ */
 public interface ConnectorContext {
-    String getConnectorId();
-    String getSessionId();
+
+
+    /**
+     * Get a reference to a global state manager for state coordination, dedup and ordering semantics
+     *
+     * @return
+     */
+    StateManager getStateManager();
+
+    /**
+     * Get a Globally unique connector instance identifier for the connector instance
+     *
+     * @return
+     */
+    UUID getConnectorId();
+
+    /**
+     * Partition id for the connector instance.
+     *
+     * @return
+     */
+    int getPartitionId();
+
+    /**
+     * Get expected total instances of this connector type currently active
+     *
+     * @return
+     */
+    int getInstanceCount();
+
+    /**
+     * Notifying the external runtime of metrics and other related events
+     *
+     * @param event Event to Sent
+     * @return Error or success code
+     */
+    Integer publishEvent(SendableEvent event);
+
+    /**
+     * Receiving events from an external manager post initialization, meant for throttling and config updates.
+     *
+     * @param listener Local listener object to bind to.
+     */
+    void subscribeToEvents(Listener listener);
+
+    /**
+     * Get a reference to the global state manager
+     *
+     * @return a client object to interact with the scheme registry
+     */
+    SchemaManager getSchemaManager();
 }
