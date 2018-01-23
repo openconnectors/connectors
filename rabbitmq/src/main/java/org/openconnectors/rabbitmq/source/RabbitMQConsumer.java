@@ -39,7 +39,7 @@ public class RabbitMQConsumer extends DefaultConsumer {
     }
 
     @Override
-    public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) throws IOException {
+    public void handleDelivery(String consumerTag, Envelope envelope, BasicProperties properties, byte[] body) {
         List<byte[]> messageBodyContainer = new ArrayList<>();
         messageBodyContainer.add(body);
         consumeFunction.accept(messageBodyContainer);

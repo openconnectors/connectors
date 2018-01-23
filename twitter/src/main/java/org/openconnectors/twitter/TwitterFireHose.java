@@ -64,7 +64,7 @@ public class TwitterFireHose implements PushSourceConnector<String> {
     }
 
     @Override
-    public void open(Config config) throws Exception {
+    public void open(Config config) {
         verifyExists(config, CONSUMER_KEY);
         verifyExists(config, CONSUMER_SECRET);
         verifyExists(config, TOKEN);
@@ -166,7 +166,7 @@ public class TwitterFireHose implements PushSourceConnector<String> {
         runnerThread.start();
     }
 
-    private void stopThread() throws Exception {
+    private void stopThread() {
         LOG.info("Source closed");
         synchronized (waitObject) {
             waitObject.notify();

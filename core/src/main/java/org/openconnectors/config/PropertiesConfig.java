@@ -19,6 +19,7 @@
 
 package org.openconnectors.config;
 
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -106,6 +107,11 @@ public class PropertiesConfig implements Config {
     @Override
     public Object getObject(String propertyName, Object defaultValue) {
         return (getObject(propertyName) != null) ? getObject(propertyName) : defaultValue;
+    }
+
+    @Override
+    public Config getScopedConfig(String propertyName) {
+        throw new NotImplementedException("Not Implemented");
     }
 
     private void merge(final Properties p){

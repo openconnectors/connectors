@@ -40,6 +40,8 @@ public interface Config {
     Boolean getBoolean(final String propertyName, final Boolean defaultValue);
     Object getObject(final String propertyName, final Object defaultValue);
 
+    Config getScopedConfig(String propertyName);
+
     Set<String> getPropertyKeys();
 
 }

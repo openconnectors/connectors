@@ -34,6 +34,10 @@ public class ConfigProvider implements Config {
         this.config = ConfigFactory.load();
     }
 
+    public ConfigProvider(com.typesafe.config.Config config) {
+        this.config = config;
+    }
+
     @Override
     public String getString(String propertyName) {
         return config.getString(propertyName);
@@ -93,6 +97,11 @@ public class ConfigProvider implements Config {
     @Override
     public Object getObject(String propertyName, Object defaultValue) {
         return config.hasPath(propertyName) ? this.getObject(propertyName) : defaultValue;
+    }
+
+    @Override
+    public Config getScopedConfig(String propertyName) {
+        return new ConfigProvider(this.config.getConfig(propertyName));
     }
 
     @Override

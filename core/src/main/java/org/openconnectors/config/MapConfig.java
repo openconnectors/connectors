@@ -19,6 +19,8 @@
 
 package org.openconnectors.config;
 
+import org.apache.commons.lang3.NotImplementedException;
+
 import java.util.HashMap;
 import java.util.Set;
 
@@ -97,6 +99,11 @@ public class MapConfig implements Config {
     @Override
     public Object getObject(String propertyName, Object defaultValue) {
         return (getObject(propertyName) != null) ? getObject(propertyName) : defaultValue;
+    }
+
+    @Override
+    public Config getScopedConfig(String propertyName) {
+        throw new NotImplementedException("Not Implemented");
     }
 
     private static boolean isNull(String propertyName, HashMap<String, Object> properties) {

@@ -35,28 +35,28 @@ public interface ConnectorContext {
     /**
      * Get a reference to a global state manager for state coordination, dedup and ordering semantics
      *
-     * @return
+     * @return global state manager instance
      */
     StateManager getStateManager();
 
     /**
      * Get a Globally unique connector instance identifier for the connector instance
      *
-     * @return
+     * @return globally unique uuid
      */
     UUID getConnectorId();
 
     /**
      * Partition id for the connector instance.
      *
-     * @return
+     * @return local partition id in cluster
      */
     int getPartitionId();
 
     /**
      * Get expected total instances of this connector type currently active
      *
-     * @return
+     * @return total active instance count
      */
     int getInstanceCount();
 
