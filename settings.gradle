@@ -8,4 +8,5 @@ include ":core",
     	":elasticsearch5",
     	":s3",
 		":rabbitmq",
+		":token",
         ":examples"

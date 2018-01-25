@@ -176,6 +176,13 @@ project(':s3') {
     }
 }
 
+//S3
+project(':token') {
+    dependencies {
+        compile project(':core')
+    }
+}
+
 //Examples local jvm
 project(':examples') {
 	dependencies {
@@ -185,5 +192,8 @@ project(':examples') {
 		compile project(':cassandra')
 		compile project(':kafka010')
 		compile project(':pulsar')
+		compile project(':elasticsearch5')
+		compile project(':rabbitmq')
+		compile project(':token')
 	}
 }
