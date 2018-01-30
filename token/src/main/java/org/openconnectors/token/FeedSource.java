@@ -15,9 +15,15 @@ import java.util.Collections;
 
 public abstract class FeedSource implements PullSourceConnector<String> {
 
-    private Exchange bitFinex;
+    private Exchange exchange;
     private MarketDataService marketDataService;
     private Ticker ticker;
+    private final Location location;
+
+    public FeedSource(Location location){
+        this.location = location;
+    }
+
 
     @Override
     public Collection<String> fetch() {
@@ -31,8 +37,8 @@ public abstract class FeedSource implements PullSourceConnector<String> {
 
     @Override
     public void open(Config config) throws Exception {
-        bitFinex = ExchangeFactory.INSTANCE.createExchange(BitfinexExchange.class.getName());
-        marketDataService = bitFinex.getMarketDataService();
+        exchange = ExchangeFactory.INSTANCE.createExchange(location.EXCHANGE_CLASS.getName());
+        marketDataService = exchange.getMarketDataService();
         ticker = marketDataService.getTicker(this.getCurrencyPair());
     }
 
@@ -40,7 +46,7 @@ public abstract class FeedSource implements PullSourceConnector<String> {
     public void close() {
         ticker = null;
         marketDataService = null;
-        bitFinex = null;
+        exchange = null;
     }
 
     @Override

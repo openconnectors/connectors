@@ -1,4 +1,6 @@
 dependencies {
     compile group: 'org.knowm.xchange', name: 'xchange-core', version: '4.3.2'
     compile group: 'org.knowm.xchange', name: 'xchange-bitfinex', version: '4.3.2'
+    compile group: 'org.knowm.xchange', name: 'xchange-ccex', version: '4.3.2'
+    compile group: 'org.knowm.xchange', name: 'xchange-gemini', version: '4.3.2'
 }
