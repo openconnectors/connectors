@@ -2,7 +2,6 @@ package org.openconnectors.token;
 
 import org.knowm.xchange.Exchange;
 import org.knowm.xchange.ExchangeFactory;
-import org.knowm.xchange.bitfinex.v1.BitfinexExchange;
 import org.knowm.xchange.currency.CurrencyPair;
 import org.knowm.xchange.dto.marketdata.Ticker;
 import org.knowm.xchange.service.marketdata.MarketDataService;
@@ -27,7 +26,7 @@ public abstract class FeedSource implements PullSourceConnector<String> {
 
     @Override
     public Collection<String> fetch() {
-        return Collections.singleton(ticker.getCurrencyPair().toString());
+        return Collections.singleton(ticker.toString());
     }
 
     @Override
