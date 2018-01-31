@@ -71,7 +71,7 @@ public abstract class StreamingFeedSource implements PushSourceConnector<String>
                 if (items[0].equals(subscriptionId)) {
                     mask = CryptoCompareUtils.hexStringToBinaryString(items[items.length - 1]);
                         LiveRate newLiveRate = CryptoCompareUtils.stringArrayToLiveRate(items, mask);
-                        if (newLiveRate != null) {
+                        if (newLiveRate != null && newLiveRate.getFlag() == 2) {
                             consumeFunction.accept(Collections.singleton(newLiveRate.toString()));
                         }
                 }

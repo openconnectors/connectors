@@ -7,7 +7,7 @@ import org.openconnectors.util.SimpleCopier;
 public class EthereumFeedToStdOutCopier extends SimpleCopier<String, String> {
 
     public EthereumFeedToStdOutCopier() {
-        super(new EthereumFeedSource(Location.NORTH_AMERICA), new StdoutSink(), x -> x);
+        super(new EthereumFeedSource(Location.ASIA), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {

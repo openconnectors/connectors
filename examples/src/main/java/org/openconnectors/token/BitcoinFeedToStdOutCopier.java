@@ -7,7 +7,7 @@ import org.openconnectors.util.SimpleCopier;
 public class BitcoinFeedToStdOutCopier extends SimpleCopier<String, String> {
 
     public BitcoinFeedToStdOutCopier() {
-        super(new BitcoinFeedSource(Location.NORTH_AMERICA), new StdoutSink(), x -> x);
+        super(new BitcoinFeedSource(Location.ASIA), new StdoutSink(), x -> x);
     }
 
     public static void main(String[] args) throws Exception {
