@@ -1,8 +1,6 @@
 package org.openconnectors.token;
 
-import org.knowm.xchange.currency.CurrencyPair;
-
-public class EthereumFeedSource extends FeedSource {
+public class EthereumFeedSource extends StreamingFeedSource {
 
     public EthereumFeedSource(Location location) {
         super(location);
@@ -13,5 +11,3 @@ public class EthereumFeedSource extends FeedSource {
         return CurrencyPair.ETH_USD;
     }
 }
-
-

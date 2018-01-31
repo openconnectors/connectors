@@ -1,20 +1,15 @@
 package org.openconnectors.token;
 
-import org.knowm.xchange.BaseExchange;
-import org.knowm.xchange.bitfinex.v1.BitfinexExchange;
-import org.knowm.xchange.ccex.CCEXExchange;
-import org.knowm.xchange.gemini.v1.GeminiExchange;
-
 public enum Location {
-    ASIA(BitfinexExchange.class),
-    EUROPE(CCEXExchange.class),
-    NORTH_AMERICA(GeminiExchange.class)
+    ASIA("Bitfinex"),
+    EUROPE("Gemini"),
+    NORTH_AMERICA("Poloniex")
     ;
 
-    public final Class<? extends BaseExchange> EXCHANGE_CLASS;
+    public final String EXCHANGE_NAME;
 
-    Location(final Class<? extends BaseExchange> exchangeClass){
-        this.EXCHANGE_CLASS = exchangeClass;
+    Location(final String exchangeName){
+        this.EXCHANGE_NAME = exchangeName;
     }
 
 }

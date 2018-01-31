@@ -1,8 +1,6 @@
 package org.openconnectors.token;
 
-import org.knowm.xchange.currency.CurrencyPair;
-
-public class BitcoinFeedSource extends FeedSource {
+public class BitcoinFeedSource extends StreamingFeedSource {
 
     public BitcoinFeedSource(Location location) {
         super(location);

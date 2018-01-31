@@ -58,19 +58,19 @@ public class StdoutSink implements SinkConnector<String> {
     }
 
     @Override
-    public void flush() throws Exception {
+    public void flush() {
         stream.flush();
     }
 
     @Override
-    public void open(Config config) throws Exception {
+    public void open(Config config) {
         outputFormat = config.getString(ConfigKeys.OUTPUT_FORMAT_KEY, ConfigKeys.DEFAULT_OUTPUT_FORMAT);
         stream = System.out;
         linesReceived = new AtomicLong(0);
     }
 
     @Override
-    public void close() throws Exception {
+    public void close() {
         this.flush();
         stream.close();
     }
